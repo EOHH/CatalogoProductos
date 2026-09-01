@@ -27,9 +27,18 @@ export interface RecentActivity {
   time: string
 }
 
+export interface ChartPoint {
+  label: string
+  value: number
+}
+
 export interface DashboardStats {
   kpis: KPI[]
-  salesChart: { total: string; trend: string }
+  salesChart: { 
+    total: string
+    trend: string
+    data: ChartPoint[] 
+  }
   topProducts: TopProduct[]
   recentActivity: RecentActivity[]
 }
@@ -49,7 +58,7 @@ export function useDashboardStats() {
         { id: 'pedidos', title: 'Pedidos', value: '0', trend: '0%', iconBg: 'bg-orange-100', trendColor: 'text-zinc-500' },
         { id: 'clientes', title: 'Clientes', value: '0', trend: '0%', iconBg: 'bg-emerald-100', trendColor: 'text-zinc-500' }
       ],
-      salesChart: { total: 'S/ 0.00', trend: '0%' },
+      salesChart: { total: 'S/ 0.00', trend: '0%', data: [] },
       topProducts: [],
       recentActivity: []
     }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, Smartphone, Loader2 } from 'lucide-react'
+import { Check, Smartphone, Loader2, CheckCircle2 } from 'lucide-react'
 import { useTenant } from '@/features/core/TenantProvider'
 import { settingsService } from '../services/settings.service'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -24,6 +24,7 @@ export function AppearanceSettings() {
   const [faviconUrl, setFaviconUrl] = useState(tenant?.favicon_url || '')
   const [isUploading, setIsUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
+  const [isSuccess, setIsSuccess] = useState(false)
 
   const updateTenantMutation = useMutation({
     mutationFn: (updates: { primary_color?: string, logo_url?: string, favicon_url?: string }) => 
@@ -31,6 +32,8 @@ export function AppearanceSettings() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tenant-context'] })
       queryClient.invalidateQueries({ queryKey: ['public-tenant'] })
+      setIsSuccess(true)
+      setTimeout(() => setIsSuccess(false), 3000)
     }
   })
 
@@ -186,7 +189,7 @@ export function AppearanceSettings() {
             </div>
           </div>
           
-          <div className="pt-6 border-t border-zinc-200">
+          <div className="pt-6 border-t border-zinc-200 flex items-center gap-4">
             <button 
               onClick={handleSave}
               disabled={updateTenantMutation.isPending}
@@ -195,6 +198,13 @@ export function AppearanceSettings() {
               {updateTenantMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Guardar Apariencia
             </button>
+            
+            {isSuccess && (
+              <span className="text-emerald-600 text-sm font-medium flex items-center">
+                <CheckCircle2 className="w-4 h-4 mr-1" />
+                Guardado correctamente
+              </span>
+            )}
           </div>
         </div>
 

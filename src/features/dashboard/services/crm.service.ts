@@ -28,12 +28,36 @@ export const crmService = {
     return newCustomer as Customer
   },
 
+  async updateCustomer(tenantId: string, customerId: string, updates: Partial<Database['public']['Tables']['customers']['Update']>): Promise<Customer> {
+    const { data, error } = await (supabase.from('customers') as any)
+      .update(updates)
+      .eq('id', customerId)
+      .eq('tenant_id', tenantId)
+      .select()
+      .single()
+
+    if (error) throw error
+    return data as Customer
+  },
+
   // --- ORDERS ---
   async getOrders(tenantId: string): Promise<any[]> {
     const { data, error } = await supabase
       .from('orders')
       .select('*, customers(*)')
       .eq('tenant_id', tenantId)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+    return data
+  },
+
+  async getCustomerOrders(tenantId: string, customerId: string): Promise<any[]> {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*, order_items(*, products(*))')
+      .eq('tenant_id', tenantId)
+      .eq('customer_id', customerId)
       .order('created_at', { ascending: false })
 
     if (error) throw error

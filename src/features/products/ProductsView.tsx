@@ -8,12 +8,15 @@ import { useCategories } from '../categories/hooks/useCategories'
 import { Plus, Search, Pencil, Trash2, Box, Image as ImageIcon, Filter } from 'lucide-react'
 import { ProductForm } from './components/ProductForm'
 import { toast } from 'sonner'
+import { ConfirmModal } from '@/components/ui/confirm-modal'
 
 export function ProductsView() {
-  const { products, isLoading, createProduct, deleteProduct, isCreating } = useProducts()
+  const { products, isLoading, createProduct, updateProduct, deleteProduct, isCreating, isUpdating } = useProducts()
   const { categories } = useCategories()
   
   const [viewState, setViewState] = useState<'list' | 'create' | 'edit'>('list')
+  const [editingProduct, setEditingProduct] = useState<any>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
   
   // Filters
   const [searchTerm, setSearchTerm] = useState('')
@@ -35,12 +38,35 @@ export function ProductsView() {
     setViewState('list')
   }
 
-  if (viewState === 'create') {
+  const handleEditSuccess = async (data: any) => {
+    try {
+      await updateProduct({ 
+        productId: editingProduct.id,
+        product: data.product,
+        collectionIds: data.collectionIds || [],
+        variants: data.variants || [],
+        imagesToDelete: data.imagesToDelete || [],
+        imagesToKeep: data.imagesToKeep || [],
+        newImageFiles: data.imageFiles || []
+      })
+      setViewState('list')
+      setEditingProduct(null)
+    } catch (error) {
+      console.error('Error interno al actualizar producto:', error)
+      toast.error('No se pudo actualizar el producto. IntÃ©ntalo nuevamente.')
+    }
+  }
+
+  if (viewState === 'create' || viewState === 'edit') {
     return (
       <ProductForm 
-        onSuccess={handleCreateSuccess} 
-        onCancel={() => setViewState('list')} 
-        isSubmitting={isCreating}
+        initialData={viewState === 'edit' ? editingProduct : undefined}
+        onSuccess={viewState === 'edit' ? handleEditSuccess : handleCreateSuccess} 
+        onCancel={() => {
+          setViewState('list')
+          setEditingProduct(null)
+        }} 
+        isSubmitting={viewState === 'edit' ? isUpdating : isCreating}
       />
     )
   }
@@ -51,7 +77,7 @@ export function ProductsView() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-zinc-900">Productos</h1>
           <p className="text-[15px] text-zinc-500 mt-1">
-            Gestiona todo el catálogo de tu tienda
+            Gestiona todo el catÃ¡logo de tu tienda
           </p>
         </div>
         <Button onClick={() => setViewState('create')} className="bg-primary hover:bg-primary/90 text-white rounded-xl px-6 py-2.5 shadow-sm">
@@ -94,7 +120,7 @@ export function ProductsView() {
                 onChange={(e) => setCategoryFilter(e.target.value)}
                 className="pl-4 pr-8 py-2 bg-zinc-50 border-none rounded-xl text-sm text-zinc-600 outline-none focus:ring-2 focus:ring-primary/20 appearance-none h-10 min-w-[160px] cursor-pointer"
               >
-                <option value="all">Todas las categorías</option>
+                <option value="all">Todas las categorÃ­as</option>
                 {categories.map((cat: any) => (
                   <option key={cat.id} value={cat.id}>{cat.name}</option>
                 ))}
@@ -109,7 +135,7 @@ export function ProductsView() {
               <TableRow className="border-zinc-100 hover:bg-transparent">
                 <TableHead className="font-medium text-zinc-500 text-xs uppercase tracking-wider pl-6 w-16">Imagen</TableHead>
                 <TableHead className="font-medium text-zinc-500 text-xs uppercase tracking-wider min-w-[200px]">Producto</TableHead>
-                <TableHead className="font-medium text-zinc-500 text-xs uppercase tracking-wider">Categoría</TableHead>
+                <TableHead className="font-medium text-zinc-500 text-xs uppercase tracking-wider">CategorÃ­a</TableHead>
                 <TableHead className="font-medium text-zinc-500 text-xs uppercase tracking-wider text-right">Precio</TableHead>
                 <TableHead className="font-medium text-zinc-500 text-xs uppercase tracking-wider text-center">Estado</TableHead>
                 <TableHead className="font-medium text-zinc-500 text-xs uppercase tracking-wider text-right pr-6">Acciones</TableHead>
@@ -121,7 +147,7 @@ export function ProductsView() {
                   <TableCell colSpan={6} className="text-center py-16 text-zinc-500">
                     <div className="flex flex-col items-center justify-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-3"></div>
-                      <p>Cargando catálogo...</p>
+                      <p>Cargando catÃ¡logo...</p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -131,7 +157,7 @@ export function ProductsView() {
                     <div className="flex flex-col items-center justify-center text-zinc-500">
                       <Box className="w-12 h-12 mb-3 text-zinc-300" />
                       <p className="text-zinc-600 font-medium">No se encontraron productos</p>
-                      <p className="text-sm mt-1">Prueba cambiando los filtros de búsqueda.</p>
+                      <p className="text-sm mt-1">Prueba cambiando los filtros de bÃºsqueda.</p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -178,14 +204,13 @@ export function ProductsView() {
                       </TableCell>
                       <TableCell className="py-4 pr-6 text-right">
                         <div className="flex justify-end gap-1.5">
-                          <Button variant="ghost" size="icon" onClick={() => toast.info('Edición de productos estará disponible muy pronto')} className="w-8 h-8 rounded-lg hover:bg-zinc-100 text-zinc-500 hover:text-zinc-900">
+                          <Button variant="ghost" size="icon" onClick={() => {
+                            setEditingProduct(product)
+                            setViewState('edit')
+                          }} className="w-8 h-8 rounded-lg hover:bg-zinc-100 text-zinc-500 hover:text-zinc-900">
                             <Pencil className="w-4 h-4" />
                           </Button>
-                          <Button variant="ghost" size="icon" onClick={() => {
-                            if (confirm('¿Estás seguro de eliminar este producto completamente? Esta acción no se puede deshacer.')) {
-                              deleteProduct(product.id)
-                            }
-                          }} className="w-8 h-8 rounded-lg hover:bg-rose-50 text-zinc-500 hover:text-rose-600">
+                          <Button variant="ghost" size="icon" onClick={() => setDeleteConfirm(product.id)} className="w-8 h-8 rounded-lg hover:bg-rose-50 text-zinc-500 hover:text-rose-600">
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
@@ -198,6 +223,20 @@ export function ProductsView() {
           </Table>
         </div>
       </Card>
+
+      <ConfirmModal
+        isOpen={!!deleteConfirm}
+        onClose={() => setDeleteConfirm(null)}
+        onConfirm={() => {
+          if (deleteConfirm) {
+            deleteProduct(deleteConfirm)
+            setDeleteConfirm(null)
+          }
+        }}
+        title="Eliminar Producto"
+        message="¿Estás seguro de eliminar este producto completamente? Esta acción borrará todas sus imágenes y variantes. No se puede deshacer."
+      />
     </div>
   )
 }
+

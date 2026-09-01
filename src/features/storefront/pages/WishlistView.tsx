@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom'
 import { Heart, Loader2 } from 'lucide-react'
 import { useStore } from '../providers/StoreProvider'
 import { catalogService } from '../services/catalog.service'
-import { ProductCard } from '../components/ProductCard'
+import { CatalogProductCard } from '../components/CatalogProductCard'
 import { useWishlist } from '../hooks/useWishlist'
+import { useStoreRoute } from '../hooks/useStoreRoute'
 
 export function WishlistView() {
   const { tenant } = useStore()
   const { wishlist } = useWishlist()
+  const { buildUrl } = useStoreRoute()
   
   const { data: allProducts, isLoading } = useQuery({
     queryKey: ['public-products', tenant?.id],
@@ -20,20 +22,31 @@ export function WishlistView() {
   const wishedProducts = allProducts?.filter(p => wishlist.includes(p.id)) || []
 
   return (
-    <div className="w-full fade-in font-sans bg-[#fcf9f9] pb-10">
-      <div className="bg-white py-16 px-4 mb-16 text-center border-b border-zinc-100 shadow-sm">
-        <Heart className="w-8 h-8 text-store-primary mx-auto mb-4" />
-        <h1 className="text-3xl md:text-5xl font-serif text-zinc-900 tracking-tight mb-2">Tus Favoritos</h1>
-        <p className="text-zinc-500 text-sm">Los artículos que más te han gustado</p>
-      </div>
+    <div className="w-full fade-in font-sans bg-[#fcf9f9] min-h-screen pb-20">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12">
+        
+        {/* Premium Inline Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 lg:mb-12 border-b border-zinc-200 pb-6">
+          <div>
+            <div className="flex items-center gap-2 text-store-primary mb-2">
+              <Heart className="w-4 h-4 fill-store-primary" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Tu Selección</span>
+            </div>
+            <h1 className="text-3xl lg:text-[42px] font-serif text-zinc-900 leading-none tracking-tight">
+              Mis Favoritos
+            </h1>
+          </div>
+          <p className="text-zinc-500 text-sm md:text-right max-w-xs">
+            Los artículos que más te han gustado, guardados en un solo lugar.
+          </p>
+        </div>
 
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         {isLoading ? (
-          <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-store-primary" /></div>
+          <div className="flex justify-center py-32"><Loader2 className="w-8 h-8 animate-spin text-store-primary" /></div>
         ) : wishedProducts.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
             {wishedProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
+              <CatalogProductCard key={product.id} product={product as any} />
             ))}
           </div>
         ) : (
@@ -44,7 +57,7 @@ export function WishlistView() {
               Guarda tus artículos preferidos tocando el ícono de corazón en cualquier producto para que no los pierdas de vista.
             </p>
             <Link 
-              to="/catalog" 
+              to={buildUrl('/catalog')} 
               className="inline-flex items-center justify-center bg-store-primary text-white text-xs font-bold uppercase tracking-widest px-8 py-4 rounded-xl hover:opacity-90 transition-opacity shadow-sm hover:shadow-md"
             >
               Explorar Catálogo

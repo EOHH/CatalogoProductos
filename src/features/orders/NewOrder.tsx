@@ -7,7 +7,7 @@ import { crmService } from '../dashboard/services/crm.service'
 import { catalogService } from '../storefront/services/catalog.service'
 import { toast } from 'sonner'
 import { Link } from 'react-router-dom'
-import type { Product } from '@/types/catalog'
+import type { PublicProduct } from '@/types/catalog'
 
 export function NewOrder() {
   const { tenant } = useTenant()
@@ -22,7 +22,7 @@ export function NewOrder() {
   })
 
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedProducts, setSelectedProducts] = useState<Array<{ product: Product, quantity: number }>>([])
+  const [selectedProducts, setSelectedProducts] = useState<Array<{ product: PublicProduct, quantity: number }>>([])
 
   // Fetch products for autocomplete
   const { data: searchResults = [], isLoading: isSearching } = useQuery({
@@ -74,7 +74,7 @@ export function NewOrder() {
     }
   })
 
-  const addProduct = (product: Product) => {
+  const addProduct = (product: PublicProduct) => {
     if (selectedProducts.find(p => p.product.id === product.id)) {
       toast.error('El producto ya está en la lista')
       return

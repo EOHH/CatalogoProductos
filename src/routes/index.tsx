@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Navigate, useLocation } from 'react-router-dom'
 import { ProtectedRoute } from '@/features/core/ProtectedRoute'
 import { RoleRoute } from '@/features/core/RoleRoute'
 import { AppShell } from '@/components/layout/AppShell'
@@ -28,6 +28,10 @@ import { StoreHome } from '@/features/storefront/pages/StoreHome'
 import { CatalogView } from '@/features/storefront/pages/CatalogView'
 import { ProductDetail } from '@/features/storefront/pages/ProductDetail'
 import { WishlistView } from '@/features/storefront/pages/WishlistView'
+import { StoreInfoView } from '@/features/storefront/pages/StoreInfoView'
+
+// Landing Imports
+import { LandingPage } from '@/features/landing/LandingPage'
 
 // Custom guard to redirect logged-in users away from /login
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
@@ -37,22 +41,51 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>
 }
 
+const storefrontRoutes = [
+  { index: true, element: <StoreHome /> },
+  { path: 'catalog', element: <CatalogView type="all" /> },
+  { path: 'category/:slug', element: <CatalogView type="category" /> },
+  { path: 'collection/:slug', element: <CatalogView type="collection" /> },
+  { path: 'product/:slug', element: <ProductDetail /> },
+  { path: 'wishlist', element: <WishlistView /> },
+  { path: 'info/:topic', element: <StoreInfoView /> }
+]
+
+const RootResolver = () => {
+  const hostname = window.location.hostname
+  const location = useLocation()
+  
+  // Identificamos el dominio principal del SaaS
+  // En producción agregaremos el dominio real (ej. gotticatalogs.com)
+  const isMainDomain = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.vercel.app')
+
+  if (isMainDomain && location.pathname === '/') {
+    return <LandingPage />
+  }
+
+  // Si no es el dominio principal, o si es una ruta profunda (ej. /catalog) en un dominio personalizado,
+  // inyectamos la app del storefront
+  return (
+    <StoreProvider>
+      <StoreLayout />
+    </StoreProvider>
+  )
+}
+
 const router = createBrowserRouter([
   {
     path: '/',
+    element: <RootResolver />,
+    children: storefrontRoutes
+  },
+  {
+    path: '/:tenantSlug',
     element: (
       <StoreProvider>
         <StoreLayout />
       </StoreProvider>
     ),
-    children: [
-      { index: true, element: <StoreHome /> },
-      { path: 'catalog', element: <CatalogView type="all" /> },
-      { path: 'category/:slug', element: <CatalogView type="category" /> },
-      { path: 'collection/:slug', element: <CatalogView type="collection" /> },
-      { path: 'product/:slug', element: <ProductDetail /> },
-      { path: 'wishlist', element: <WishlistView /> }
-    ]
+    children: storefrontRoutes
   },
   {
     element: (

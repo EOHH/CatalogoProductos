@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,6 +9,7 @@ import { Plus, Search, Pencil, Trash2, LayoutGrid } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
+import { ConfirmModal } from '@/components/ui/confirm-modal'
 
 const categorySchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
@@ -25,6 +26,7 @@ export function CategoriesView() {
   const [searchTerm, setSearchTerm] = useState('')
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting }, setValue } = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
@@ -60,7 +62,14 @@ export function CategoriesView() {
   }
 
   const onSubmit = async (data: CategoryFormValues) => {
-    const payload = { ...data, image_url: null, description: data.description || null }
+    const payload = {
+      name: data.name,
+      slug: data.slug,
+      description: data.description || null,
+      is_active: data.is_active,
+      position: data.position,
+      image_url: null
+    }
     if (editingId) {
       await updateCategory({ id: editingId, updates: payload })
     } else {
@@ -148,11 +157,7 @@ export function CategoriesView() {
                         <Button variant="ghost" size="icon" onClick={() => openEditSheet(category)} className="w-8 h-8 rounded-lg hover:bg-zinc-100 text-zinc-500 hover:text-zinc-900">
                           <Pencil className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => {
-                          if (confirm('¿Estás seguro de eliminar esta categoría?')) {
-                            deleteCategory(category.id)
-                          }
-                        }} className="w-8 h-8 rounded-lg hover:bg-rose-50 text-zinc-500 hover:text-rose-600">
+                        <Button variant="ghost" size="icon" onClick={() => setDeleteConfirm(category.id)} className="w-8 h-8 rounded-lg hover:bg-rose-50 text-zinc-500 hover:text-rose-600">
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
@@ -221,6 +226,19 @@ export function CategoriesView() {
           </form>
         </SheetContent>
       </Sheet>
+
+      <ConfirmModal
+        isOpen={!!deleteConfirm}
+        onClose={() => setDeleteConfirm(null)}
+        onConfirm={() => {
+          if (deleteConfirm) {
+            deleteCategory(deleteConfirm)
+            setDeleteConfirm(null)
+          }
+        }}
+        title="Eliminar Categoría"
+        message="¿Estás seguro de que deseas eliminar esta categoría? Esta acción no se puede deshacer y podría afectar a los productos asociados."
+      />
     </div>
   )
 }

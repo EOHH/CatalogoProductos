@@ -62,6 +62,9 @@ export interface Database {
           currency: string
           locale: string
           timezone: string
+          social_instagram: string | null
+          social_facebook: string | null
+          social_tiktok: string | null
           created_at: string
           updated_at: string
         }
@@ -76,6 +79,9 @@ export interface Database {
           currency?: string
           locale?: string
           timezone?: string
+          social_instagram?: string | null
+          social_facebook?: string | null
+          social_tiktok?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -90,6 +96,9 @@ export interface Database {
           currency?: string
           locale?: string
           timezone?: string
+          social_instagram?: string | null
+          social_facebook?: string | null
+          social_tiktok?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -318,7 +327,12 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_public_catalog: {
+        Args: {
+          p_slug: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

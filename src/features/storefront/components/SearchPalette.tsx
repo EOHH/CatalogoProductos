@@ -5,6 +5,7 @@ import { Search, X, Loader2 } from 'lucide-react'
 import { useStore } from '../providers/StoreProvider'
 import { catalogService } from '../services/catalog.service'
 import { useDebounce } from '../../../hooks/useDebounce'
+import { useStoreRoute } from '../hooks/useStoreRoute'
 
 interface SearchPaletteProps {
   isOpen: boolean
@@ -15,6 +16,7 @@ export function SearchPalette({ isOpen, onClose }: SearchPaletteProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const debouncedSearchTerm = useDebounce(searchTerm, 300)
   const { tenant } = useStore()
+  const { buildUrl } = useStoreRoute()
   const inputRef = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
 
@@ -45,7 +47,7 @@ export function SearchPalette({ isOpen, onClose }: SearchPaletteProps) {
 
   const handleProductClick = (slug: string) => {
     onClose()
-    navigate(`/product/${slug}`)
+    navigate(buildUrl(`/product/${slug}`))
   }
 
   return (
@@ -130,7 +132,7 @@ export function SearchPalette({ isOpen, onClose }: SearchPaletteProps) {
                 <button
                   onClick={() => {
                     onClose()
-                    navigate(`/catalog`)
+                    navigate(buildUrl(`/catalog`))
                   }}
                   className="w-full py-3 text-xs font-medium text-zinc-500 hover:text-zinc-900 transition-colors text-center"
                 >

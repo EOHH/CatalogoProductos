@@ -1,10 +1,14 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Search, Crown, ArrowUpRight } from 'lucide-react'
 import { useTenant } from '@/features/core/TenantProvider'
-import { crmService } from '../dashboard/services/crm.service'
+import { crmService, type Customer } from '../dashboard/services/crm.service'
+import { CustomerDetailsSheet } from './components/CustomerDetailsSheet'
 
 export function CustomersView() {
   const { tenant } = useTenant()
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
 
   const { data: customers = [], isLoading } = useQuery({
     queryKey: ['crm-customers', tenant?.id],
@@ -14,6 +18,12 @@ export function CustomersView() {
 
   // Determine VIP based on top 20% spending or arbitrary threshold
   const isVip = (spent: number) => spent > 500
+
+  const filteredCustomers = customers.filter(c => {
+    const term = searchTerm.toLowerCase()
+    const fullName = `${c.first_name || ''} ${c.last_name || ''}`.toLowerCase()
+    return fullName.includes(term) || (c.email || '').toLowerCase().includes(term) || (c.phone || '').includes(term)
+  })
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-700 font-sans">
@@ -36,12 +46,14 @@ export function CustomersView() {
             <input 
               type="text" 
               placeholder="Buscar cliente..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-9 pr-4 py-2 bg-white border border-zinc-200 rounded-lg text-sm focus:outline-none focus:border-zinc-400 transition-colors"
             />
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-zinc-600 bg-zinc-100 px-3 py-1 rounded-full">
-              {customers.length} Clientes Totales
+              {filteredCustomers.length} Clientes Totales
             </span>
           </div>
         </div>
@@ -65,15 +77,19 @@ export function CustomersView() {
                     Cargando clientes...
                   </td>
                 </tr>
-              ) : customers.length === 0 ? (
+              ) : filteredCustomers.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-zinc-500">
-                    Aún no hay clientes registrados. Crea un pedido manual para agregar uno.
+                    {searchTerm ? 'No se encontraron clientes que coincidan con la búsqueda.' : 'Aún no hay clientes registrados. Crea un pedido manual para agregar uno.'}
                   </td>
                 </tr>
               ) : (
-                customers.map(customer => (
-                  <tr key={customer.id} className="hover:bg-zinc-50/80 transition-colors group">
+                filteredCustomers.map(customer => (
+                  <tr 
+                    key={customer.id} 
+                    className="hover:bg-zinc-50/80 transition-colors group cursor-pointer"
+                    onClick={() => setSelectedCustomer(customer)}
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-zinc-900 text-white flex items-center justify-center font-bold text-sm">
@@ -118,6 +134,12 @@ export function CustomersView() {
           </table>
         </div>
       </div>
+
+      <CustomerDetailsSheet 
+        customer={selectedCustomer} 
+        isOpen={!!selectedCustomer} 
+        onClose={() => setSelectedCustomer(null)} 
+      />
     </div>
   )
 }

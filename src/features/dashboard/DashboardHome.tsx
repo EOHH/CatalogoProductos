@@ -116,10 +116,10 @@ export function DashboardHome() {
               <ArrowUpRight className="w-3 h-3 mr-0.5" /> {stats.salesChart.trend}
             </span>
           </div>
-          {/* Fake Chart SVG */}
+          {/* Fake Chart SVG replaced with dynamic polyline */}
           <div className="flex-1 w-full relative mt-auto">
             <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-[10px] text-zinc-400 font-medium">
-              <span>S/ 30K</span><span>S/ 25K</span><span>S/ 20K</span><span>S/ 15K</span><span>S/ 10K</span><span>S/ 5K</span><span>S/ 0</span>
+              <span>Máx</span><span></span><span></span><span></span><span></span><span></span><span>S/ 0</span>
             </div>
             <div className="absolute left-8 right-0 top-2 bottom-6">
               <svg width="100%" height="100%" viewBox="0 0 300 150" preserveAspectRatio="none" className="overflow-visible">
@@ -129,15 +129,36 @@ export function DashboardHome() {
                     <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0"/>
                   </linearGradient>
                 </defs>
-                <path d="M 0 130 C 20 120, 40 140, 60 110 S 100 80, 120 70 S 160 90, 180 50 S 220 30, 240 40 S 280 10, 300 20" fill="url(#lineGrad)" />
-                <path d="M 0 130 C 20 120, 40 140, 60 110 S 100 80, 120 70 S 160 90, 180 50 S 220 30, 240 40 S 280 10, 300 20" fill="none" stroke="#8b5cf6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                <circle cx="300" cy="20" r="4" fill="white" stroke="#8b5cf6" strokeWidth="2" />
-                <rect x="270" y="-5" width="45" height="18" rx="4" fill="white" stroke="#f4f4f5" />
-                <text x="292.5" y="7" fontSize="8" fontWeight="bold" fill="#8b5cf6" textAnchor="middle">{stats.salesChart.total.replace('.00', '')}</text>
+                {(() => {
+                  const data = stats.salesChart.data || []
+                  if (data.length === 0) return null
+                  const maxVal = Math.max(...data.map(d => d.value), 1)
+                  const points = data.map((d, i) => {
+                    const x = i * 50
+                    const y = 130 - ((d.value / maxVal) * 120)
+                    return `${x},${y}`
+                  })
+                  
+                  const linePath = `M ${points.join(' L ')}`
+                  const fillPath = `${linePath} L 300,130 L 0,130 Z`
+                  const lastY = 130 - ((data[data.length - 1].value / maxVal) * 120)
+
+                  return (
+                    <>
+                      <path d={fillPath} fill="url(#lineGrad)" />
+                      <path d={linePath} fill="none" stroke="#8b5cf6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <circle cx="300" cy={lastY} r="4" fill="white" stroke="#8b5cf6" strokeWidth="2" />
+                      <rect x="270" y={lastY - 25} width="45" height="18" rx="4" fill="white" stroke="#f4f4f5" />
+                      <text x="292.5" y={lastY - 13} fontSize="8" fontWeight="bold" fill="#8b5cf6" textAnchor="middle">{stats.salesChart.total.replace('.00', '')}</text>
+                    </>
+                  )
+                })()}
               </svg>
             </div>
             <div className="absolute left-8 right-0 bottom-0 flex justify-between text-[10px] text-zinc-400 font-medium">
-              <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+              {(stats.salesChart.data || []).map((d, i) => (
+                <span key={i}>{d.label}</span>
+              ))}
             </div>
           </div>
         </Card>
@@ -149,6 +170,11 @@ export function DashboardHome() {
             <button className="text-[11px] font-medium text-primary hover:underline">Ver todos</button>
           </div>
           <div className="flex-1 flex flex-col space-y-5 overflow-y-auto pr-2 scrollbar-none">
+            {stats.topProducts.length === 0 && (
+              <div className="flex flex-1 items-center justify-center">
+                <span className="text-[13px] text-zinc-400">Aún no hay ventas</span>
+              </div>
+            )}
             {stats.topProducts.map(product => (
               <ProductRow 
                 key={product.id} 
@@ -174,6 +200,11 @@ export function DashboardHome() {
           </div>
           <div className="flex-1 flex flex-col space-y-6 overflow-y-auto pr-2 scrollbar-none relative">
             <div className="absolute left-4 top-2 bottom-2 w-px bg-zinc-100 z-0"></div>
+            {stats.recentActivity.length === 0 && (
+              <div className="flex flex-1 items-center justify-center relative z-10 bg-white">
+                <span className="text-[13px] text-zinc-400">No hay actividad reciente</span>
+              </div>
+            )}
             {stats.recentActivity.map(activity => (
               <ActivityRow 
                 key={activity.id} 

@@ -1,22 +1,24 @@
 import { Link } from 'react-router-dom'
-import { Heart } from 'lucide-react'
-import type { Product } from '@/types/catalog'
+import { Heart, ShoppingCart } from 'lucide-react'
+import type { PublicProduct } from '@/types/catalog'
 import { useWishlist } from '../hooks/useWishlist'
+import { useStoreRoute } from '../hooks/useStoreRoute'
+import { useCart } from '../hooks/useCart'
 
 interface ProductCardProps {
-  product: Product
+  product: PublicProduct
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  // @ts-ignore - We joined product_images in the query
-  const primaryImage = product.product_images?.find(img => img.is_primary)?.public_url 
-    // @ts-ignore
-    || product.product_images?.[0]?.public_url
+  const primaryImage = product.images?.find(img => img.is_primary)?.public_url 
+    || product.images?.[0]?.public_url
     || '/images/placeholder-product.png' // Fallback image
 
   const isOnSale = product.compare_at_price && product.compare_at_price > product.price
   
   const { isInWishlist, toggleWishlist } = useWishlist()
+  const { addItem } = useCart()
+  const { buildUrl } = useStoreRoute()
   const isWished = isInWishlist(product.id)
 
   const handleWishlistClick = (e: React.MouseEvent) => {
@@ -25,42 +27,80 @@ export function ProductCard({ product }: ProductCardProps) {
     toggleWishlist(product.id)
   }
 
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    const defaultVariant = product.variants?.[0]
+    
+    addItem({
+      id: defaultVariant ? `${product.id}-${defaultVariant.id}` : product.id,
+      productId: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      variantId: defaultVariant?.id,
+      variantName: defaultVariant?.name,
+      imageUrl: primaryImage,
+      stock: defaultVariant ? defaultVariant.stock : undefined
+    })
+  }
+
   return (
-    <Link to={`/product/${product.slug}`} className="group block">
-      <div className="relative aspect-[3/4] bg-zinc-100 overflow-hidden mb-4 rounded-2xl shadow-sm group-hover:shadow-md transition-shadow">
-        <img 
-          src={primaryImage} 
-          alt={product.name}
-          className="object-cover w-full h-full object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-          loading="lazy"
-        />
+    <Link to={buildUrl(`/product/${product.slug}`)} className="group block h-full">
+      <div className="relative aspect-[4/5] bg-white overflow-hidden rounded-2xl shadow-sm border border-zinc-100 group-hover:shadow-md transition-shadow flex flex-col justify-between">
+        
+        {/* Top Badges */}
         {isOnSale && (
-          <div className="absolute top-3 left-3 bg-store-primary/90 backdrop-blur text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-md shadow-sm">
+          <div className="absolute top-3 left-3 bg-store-primary/90 backdrop-blur text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-md shadow-sm z-20">
             Sale
           </div>
         )}
         
-        {/* Wishlist Button */}
-        <button 
-          onClick={handleWishlistClick}
-          className="absolute top-3 right-3 p-2.5 bg-white/90 backdrop-blur rounded-full shadow-sm hover:bg-white hover:scale-110 transition-all z-10 text-zinc-400 hover:text-store-primary"
-        >
-          <Heart className={`w-[18px] h-[18px] ${isWished ? 'fill-store-primary text-store-primary' : 'currentColor'}`} />
-        </button>
-      </div>
-      <div className="text-left px-1">
-        <h3 className="text-[15px] font-bold text-zinc-900 group-hover:text-store-primary transition-colors line-clamp-1 mb-1">
-          {product.name}
-        </h3>
-        <div className="flex items-center gap-2">
-          {isOnSale && (
-            <span className="text-xs text-zinc-400 line-through">
-              S/ {Number(product.compare_at_price).toFixed(2)}
+        {/* Actions (Wishlist & Cart) */}
+        <div className="absolute top-3 right-3 flex flex-col gap-2 z-20">
+          <button 
+            onClick={handleWishlistClick}
+            className="p-2.5 bg-white/90 backdrop-blur rounded-full shadow-sm hover:bg-white hover:scale-110 transition-all text-zinc-400 hover:text-store-primary"
+            title="Añadir a favoritos"
+          >
+            <Heart className={`w-[18px] h-[18px] ${isWished ? 'fill-store-primary text-store-primary' : 'currentColor'}`} />
+          </button>
+          
+          <button 
+            onClick={handleAddToCart}
+            className="p-2.5 bg-white/90 backdrop-blur rounded-full shadow-sm hover:bg-store-primary hover:text-white hover:scale-110 transition-all text-zinc-600 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0"
+            title="Añadir al carrito"
+          >
+            <ShoppingCart className="w-[18px] h-[18px]" />
+          </button>
+        </div>
+
+        {/* Image */}
+        <div className="relative flex-grow flex items-center justify-center p-4">
+          <img 
+            src={primaryImage} 
+            alt={product.name}
+            className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
+            loading="lazy"
+          />
+        </div>
+
+        {/* Text Container (Inside Card) */}
+        <div className="relative z-10 w-full px-4 pb-4 pt-8 bg-gradient-to-t from-white via-white to-transparent text-left">
+          <h3 className="text-[14px] font-bold text-zinc-900 group-hover:text-store-primary transition-colors line-clamp-1 mb-1.5">
+            {product.name}
+          </h3>
+          <div className="flex items-center gap-2">
+            {isOnSale && (
+              <span className="text-[11px] text-zinc-400 line-through">
+                S/ {Number(product.compare_at_price).toFixed(2)}
+              </span>
+            )}
+            <span className="text-sm font-black text-store-primary">
+              S/ {Number(product.price).toFixed(2)}
             </span>
-          )}
-          <span className="text-sm font-bold text-store-primary">
-            S/ {Number(product.price).toFixed(2)}
-          </span>
+          </div>
         </div>
       </div>
     </Link>

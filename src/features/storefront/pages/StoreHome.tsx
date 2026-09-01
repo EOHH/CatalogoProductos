@@ -1,221 +1,171 @@
-import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { ChevronDown, Filter, Loader2, ShieldCheck, Award, Truck, Headset, ArrowRight, X } from 'lucide-react'
+import { Loader2, ArrowRight, ShieldCheck, Award } from 'lucide-react'
 import { useStore } from '../providers/StoreProvider'
 import { catalogService } from '../services/catalog.service'
 import { ProductCard } from '../components/ProductCard'
+import { useStoreRoute } from '../hooks/useStoreRoute'
+import { PremiumCarousel } from '../components/PremiumCarousel'
+import { CategoryBanners } from '../components/CategoryBanners'
 
 export function StoreHome() {
-  const { tenant } = useStore()
-  
+  const { tenant, settings } = useStore()
+  const { buildUrl } = useStoreRoute()
+
   const { data: newProducts, isLoading: loadingNew } = useQuery({
     queryKey: ['public-new-products', tenant?.id],
     queryFn: () => catalogService.getNewProducts(tenant!.id),
     enabled: !!tenant?.id
   })
 
-  // States for buttons
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [sortBy, setSortBy] = useState('newest') // newest, price_asc, price_desc
-  const [isSortOpen, setIsSortOpen] = useState(false)
-
-  // Process products (Sort)
-  const processedProducts = newProducts ? [...newProducts].sort((a, b) => {
-    if (sortBy === 'price_asc') return Number(a.price) - Number(b.price)
-    if (sortBy === 'price_desc') return Number(b.price) - Number(a.price)
-    return 0 // newest (default order from DB)
-  }) : []
-
-  const { data: collections } = useQuery({
-    queryKey: ['public-collections', tenant?.id],
-    queryFn: () => catalogService.getCollections(tenant!.id),
-    enabled: !!tenant?.id
-  })
-
-  const { data: categories } = useQuery({
-    queryKey: ['public-categories', tenant?.id],
-    queryFn: () => catalogService.getCategories(tenant!.id),
-    enabled: !!tenant?.id
-  })
+  const processedProducts = newProducts ? [...newProducts] : []
 
   return (
-    <div className="w-full fade-in font-sans bg-[#fcf9f9] pb-10">
-      
+    <div className="w-full fade-in font-sans bg-[#fcf9f9] pb-0">
+
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        
+
         {/* 1. HERO BANNER */}
-        <section className="relative w-full rounded-3xl overflow-hidden flex flex-col md:flex-row mb-16 shadow-sm border border-zinc-100 bg-white">
-          {/* Left: Text */}
-          <div className="w-full md:w-1/2 p-10 md:p-16 lg:p-24 flex flex-col justify-center bg-store-primary/5">
-            <h2 className="text-sm font-medium text-zinc-500 uppercase tracking-widest mb-6">
-              Colección 2026
-            </h2>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif text-zinc-900 mb-6 tracking-tight leading-[1.1]">
-              Elegancia <br className="hidden md:block"/> que te define
-            </h1>
-            <p className="text-zinc-600 text-lg mb-10 max-w-md leading-relaxed">
-              Descubre diseños exclusivos para momentos inolvidables.
-            </p>
-            <div>
-              <Link to="/category/vestidos-de-noche" className="inline-flex items-center justify-center bg-store-primary hover:bg-store-primary/90 text-white text-sm font-bold uppercase tracking-widest px-8 py-4 rounded-full transition-all shadow-md hover:shadow-lg">
-                Ver Vestidos de Noche <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-          
-          {/* Right: Image */}
-          <div className="w-full md:w-1/2 h-[400px] md:h-auto relative">
-            <img 
-              src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=1983&auto=format&fit=crop" 
-              alt="Elegancia" 
-              className="absolute inset-0 w-full h-full object-cover object-top"
+        <section className="relative w-full rounded-3xl overflow-hidden mb-12 lg:mb-16 shadow-xl border border-zinc-100 bg-gradient-to-br from-[#faf8f5] to-[#f3f0ea] lg:min-h-[480px] flex flex-col lg:flex-row">
+
+          {/* Subtle Abstract Waves Background (Full width) */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 0% 50%, #000 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
+
+          {/* Desktop: Image at right, curving leftwards */}
+          <div
+            className="absolute inset-0 z-0 hidden lg:block"
+            style={{ clipPath: 'ellipse(60% 120% at 100% 50%)' }}
+          >
+            <img
+              src="https://images.pexels.com/photos/6969962/pexels-photo-6969962.jpeg"
+              alt="Colección Principal"
+              className="w-full h-full object-cover object-[center_60%]"
             />
           </div>
-        </section>
 
-        {/* 2. MAIN LAYOUT (SIDEBAR + GRID) */}
-        <div className="flex flex-col lg:flex-row gap-12 mt-16 relative">
-          
-          {/* Mobile Filter Overlay */}
-          {isFilterOpen && (
-            <div className="fixed inset-0 bg-black/20 z-40 lg:hidden backdrop-blur-sm" onClick={() => setIsFilterOpen(false)} />
-          )}
-
-          {/* SIDEBAR */}
-          <aside className={`fixed inset-y-0 left-0 z-50 w-[280px] bg-white p-6 overflow-y-auto transition-transform transform ${isFilterOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0 lg:w-64 lg:p-0 lg:bg-transparent lg:z-auto flex-shrink-0 space-y-8 lg:space-y-12 shadow-2xl lg:shadow-none`}>
+          {/* Text Content */}
+          <div className="relative z-20 w-full lg:w-[50%] p-5 md:p-10 lg:p-16 flex flex-col justify-between h-full">
             
-            {/* Mobile Close Button */}
-            <div className="flex justify-between items-center lg:hidden mb-2">
-              <h3 className="font-serif text-xl text-zinc-900">Filtros</h3>
-              <button onClick={() => setIsFilterOpen(false)} className="p-2 -mr-2 text-zinc-400 hover:text-zinc-900">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            {/* Categorías */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-100">
-              <h4 className="text-[13px] font-bold text-zinc-900 uppercase tracking-widest mb-6">Categorías</h4>
-              <ul className="space-y-4">
-                <li>
-                  <Link to="/catalog" className="text-sm font-bold text-store-primary transition-colors">
-                    Todo
-                  </Link>
-                </li>
-                {categories?.map(cat => (
-                  <li key={cat.id}>
-                    <Link to={`/category/${cat.slug}`} className="text-sm text-zinc-500 hover:text-store-primary transition-colors">
-                      {cat.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {/* Top Text Block */}
+            <div>
+              <h2 className="text-[10px] md:text-[11px] font-bold text-store-primary uppercase tracking-[0.25em] mb-2 lg:mb-4">
+                Nueva Colección {new Date().getFullYear()}
+              </h2>
 
-            {/* Colecciones */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-100">
-              <h4 className="text-[13px] font-bold text-zinc-900 uppercase tracking-widest mb-6">Colecciones</h4>
-              <ul className="space-y-4">
-                {collections?.map(col => (
-                  <li key={col.id}>
-                    <Link to={`/collection/${col.slug}`} className="text-sm text-zinc-500 hover:text-store-primary transition-colors">
-                      {col.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl text-zinc-900 mb-3 lg:mb-5 tracking-tight leading-[1.05] flex flex-wrap items-baseline gap-x-2 lg:gap-x-3">
+                <span className="font-sans font-extrabold">{settings?.store_name ? settings.store_name.split(' ')[0] : 'DAREN'}</span>
+                <span className="font-serif font-light text-3xl md:text-5xl lg:text-6xl opacity-90">{settings?.store_name?.split(' ').slice(1).join(' ') || 'Style'}</span>
+              </h1>
 
-            {/* Promo Box */}
-            <div className="relative rounded-2xl overflow-hidden p-8 shadow-sm border border-zinc-100 bg-gradient-to-br from-store-primary/10 to-store-primary/20">
-              <div className="relative z-10">
-                <h4 className="text-xl font-serif text-zinc-900 mb-3 leading-tight">Brilla en cada<br/>momento ✨</h4>
-                <p className="text-xs text-zinc-600 mb-6 leading-relaxed">Diseños exclusivos para mujeres únicas como tú.</p>
-                <Link to="/catalog" className="inline-block bg-white/70 backdrop-blur-sm text-store-primary text-xs font-bold uppercase tracking-widest px-6 py-2.5 rounded-full border border-white hover:bg-white transition-colors shadow-sm">
-                  Ver Colección
+              <p className="text-zinc-500 text-xs md:text-base mb-5 lg:mb-8 max-w-sm leading-relaxed font-medium">
+                {settings?.description || 'Descubre piezas únicas que realzan tu personalidad y te acompañan en cada momento especial.'}
+              </p>
+
+              <div className="mb-4 lg:mb-10">
+                <Link to={buildUrl("/catalog")} className="inline-flex items-center justify-center bg-store-primary hover:bg-store-primary/90 text-white text-[11px] lg:text-xs font-bold uppercase tracking-widest px-6 lg:px-8 py-3 lg:py-3.5 rounded-full transition-all shadow-lg hover:shadow-xl shadow-store-primary/20 w-auto">
+                  Explorar Catálogo <ArrowRight className="ml-2 w-4 h-4" strokeWidth={2.5} />
                 </Link>
               </div>
             </div>
 
-          </aside>
-
-          {/* RIGHT CONTENT (PRODUCTS) */}
-          <main className="flex-1">
-            
-            {/* Toolbar */}
-            <div className="flex justify-between items-center mb-8 relative z-10">
-              <button 
-                onClick={() => setIsFilterOpen(!isFilterOpen)} 
-                className="flex items-center gap-2 text-sm font-bold text-zinc-600 hover:text-store-primary transition-colors px-4 py-2 rounded-lg bg-white border border-zinc-100 shadow-sm hover:shadow-md lg:hidden"
-              >
-                <Filter className="w-4 h-4" />
-                FILTRAR
-              </button>
-              
-              {/* Spacer on Desktop */}
-              <div className="hidden lg:block"></div>
-
-              <div className="relative">
-                <button 
-                  onClick={() => setIsSortOpen(!isSortOpen)}
-                  className="flex items-center gap-2 text-sm font-bold text-store-primary bg-store-primary/10 hover:bg-store-primary/20 px-4 py-2 rounded-lg transition-colors"
-                >
-                  {sortBy === 'newest' ? 'MÁS RECIENTES' : sortBy === 'price_asc' ? 'MENOR PRECIO' : 'MAYOR PRECIO'}
-                  <ChevronDown className={`w-4 h-4 transition-transform ${isSortOpen ? 'rotate-180' : ''}`} />
-                </button>
-                {isSortOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-zinc-100 shadow-xl rounded-xl overflow-hidden py-2 z-20">
-                    <button onClick={() => { setSortBy('newest'); setIsSortOpen(false); }} className={`w-full text-left px-4 py-2 text-sm ${sortBy === 'newest' ? 'text-store-primary font-bold bg-store-primary/5' : 'text-zinc-600 hover:bg-zinc-50'}`}>Más Recientes</button>
-                    <button onClick={() => { setSortBy('price_asc'); setIsSortOpen(false); }} className={`w-full text-left px-4 py-2 text-sm ${sortBy === 'price_asc' ? 'text-store-primary font-bold bg-store-primary/5' : 'text-zinc-600 hover:bg-zinc-50'}`}>Precio: Menor a Mayor</button>
-                    <button onClick={() => { setSortBy('price_desc'); setIsSortOpen(false); }} className={`w-full text-left px-4 py-2 text-sm ${sortBy === 'price_desc' ? 'text-store-primary font-bold bg-store-primary/5' : 'text-zinc-600 hover:bg-zinc-50'}`}>Precio: Mayor a Menor</button>
-                  </div>
-                )}
-              </div>
+            {/* Mobile Image (Inline between text and features) */}
+            <div className="w-[calc(100%+2.5rem)] -mx-5 h-[160px] relative lg:hidden mb-5 mt-1">
+              <img
+                src="https://images.pexels.com/photos/6969962/pexels-photo-6969962.jpeg"
+                alt="Colección Principal"
+                className="w-full h-full object-cover object-[center_30%]"
+                style={{ clipPath: 'ellipse(150% 100% at 50% 100%)' }}
+              />
             </div>
 
-            {/* Grid */}
-            {loadingNew ? (
-              <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-store-primary" /></div>
-            ) : processedProducts.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10">
-                {processedProducts.map(product => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
+            {/* Mini Features (Hero Bottom) */}
+            <div className="grid grid-cols-2 lg:flex lg:flex-wrap items-center gap-y-3 gap-x-2 lg:gap-6 pt-4 lg:pt-5 border-t border-zinc-200/60">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-store-primary/10 flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-3.5 h-3.5 text-store-primary" strokeWidth={2} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[8px] lg:text-[9px] font-bold text-zinc-800 uppercase tracking-widest">Tendencias</span>
+                  <span className="text-[8px] lg:text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Exclusivas</span>
+                </div>
               </div>
-            ) : (
-              <div className="bg-white rounded-2xl p-12 text-center border border-zinc-100">
-                <p className="text-zinc-500">No hay productos publicados aún.</p>
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-store-primary/10 flex items-center justify-center shrink-0">
+                  <Award className="w-3.5 h-3.5 text-store-primary" strokeWidth={2} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[8px] lg:text-[9px] font-bold text-zinc-800 uppercase tracking-widest">Calidad</span>
+                  <span className="text-[8px] lg:text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Premium</span>
+                </div>
               </div>
-            )}
-            
-            {/* Features Bar */}
-            <div className="mt-12 pt-8 border-t border-zinc-200 grid grid-cols-2 md:grid-cols-4 gap-8">
-              <div className="text-center flex flex-col items-center">
-                <ShieldCheck className="w-8 h-8 text-store-primary/80 mb-3" strokeWidth={1.5} />
-                <h5 className="text-xs font-bold text-zinc-900 mb-2">Diseños Exclusivos</h5>
-                <p className="text-[11px] text-zinc-500">Colecciones únicas y limitadas</p>
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-store-primary/10 flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-3.5 h-3.5 text-store-primary" strokeWidth={2} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[8px] lg:text-[9px] font-bold text-zinc-800 uppercase tracking-widest">Pago 100%</span>
+                  <span className="text-[8px] lg:text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Seguro</span>
+                </div>
               </div>
-              <div className="text-center flex flex-col items-center">
-                <Award className="w-8 h-8 text-store-primary/80 mb-3" strokeWidth={1.5} />
-                <h5 className="text-xs font-bold text-zinc-900 mb-2">Calidad Premium</h5>
-                <p className="text-[11px] text-zinc-500">Materiales y acabados de lujo</p>
-              </div>
-              <div className="text-center flex flex-col items-center">
-                <Truck className="w-8 h-8 text-store-primary/80 mb-3" strokeWidth={1.5} />
-                <h5 className="text-xs font-bold text-zinc-900 mb-2">Envíos Seguros</h5>
-                <p className="text-[11px] text-zinc-500">A todo el país</p>
-              </div>
-              <div className="text-center flex flex-col items-center">
-                <Headset className="w-8 h-8 text-store-primary/80 mb-3" strokeWidth={1.5} />
-                <h5 className="text-xs font-bold text-zinc-900 mb-2">Atención Personalizada</h5>
-                <p className="text-[11px] text-zinc-500">Asesoría por expertas</p>
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-store-primary/10 flex items-center justify-center shrink-0">
+                  <Award className="w-3.5 h-3.5 text-store-primary" strokeWidth={2} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[8px] lg:text-[9px] font-bold text-zinc-800 uppercase tracking-widest">Atención</span>
+                  <span className="text-[8px] lg:text-[9px] font-bold text-zinc-500 uppercase tracking-widest">24/7</span>
+                </div>
               </div>
             </div>
+          </div>
 
-          </main>
+          {/* Carousel Indicators Placeholder */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 lg:left-auto lg:right-1/4 lg:translate-x-0 flex items-center gap-2 z-20">
+            <div className="w-2 h-2 rounded-full bg-store-primary"></div>
+            <div className="w-2 h-2 rounded-full bg-zinc-300"></div>
+            <div className="w-2 h-2 rounded-full bg-zinc-300"></div>
+          </div>
+        </section>
+      </div>
 
+      {/* 2. PREMIUM CAROUSEL (DESTACADOS) */}
+      <PremiumCarousel />
+
+      {/* 3. CATEGORY BANNERS */}
+      <CategoryBanners />
+
+      {/* 4. ÚLTIMAS NOVEDADES (CLEAN GRID) */}
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-16 mb-12">
+        <div className="flex flex-col items-center text-center mb-10 lg:mb-14">
+          <h2 className="text-[11px] font-bold text-store-primary uppercase tracking-[0.3em] mb-3">
+            Últimos Ingresos
+          </h2>
+          <h3 className="text-3xl md:text-4xl lg:text-5xl font-serif text-zinc-900 tracking-tight">
+            Novedades
+          </h3>
+        </div>
+
+        {loadingNew ? (
+          <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-store-primary" /></div>
+        ) : processedProducts.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+            {processedProducts.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-2xl p-12 text-center border border-zinc-100">
+            <p className="text-zinc-500">No hay productos publicados aún.</p>
+          </div>
+        )}
+
+        <div className="mt-16 flex justify-center">
+          <Link to={buildUrl("/catalog")} className="inline-flex items-center justify-center bg-white border border-zinc-200 hover:border-store-primary hover:text-store-primary text-zinc-900 text-xs font-bold uppercase tracking-widest px-8 py-3.5 rounded-full transition-all">
+            Ver Todo el Catálogo <ArrowRight className="ml-2 w-4 h-4" strokeWidth={2.5} />
+          </Link>
         </div>
       </div>
+
     </div>
   )
 }

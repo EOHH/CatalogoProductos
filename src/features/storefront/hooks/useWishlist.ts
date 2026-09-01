@@ -44,7 +44,15 @@ export function useWishlist() {
     emitChange()
   }
 
+  const syncWithProducts = (validIds: string[]) => {
+    const filtered = globalWishlist.filter(id => validIds.includes(id))
+    if (filtered.length !== globalWishlist.length) {
+      globalWishlist = filtered
+      emitChange()
+    }
+  }
+
   const isInWishlist = (productId: string) => wishlist.includes(productId)
 
-  return { wishlist, toggleWishlist, isInWishlist }
+  return { wishlist, toggleWishlist, isInWishlist, syncWithProducts }
 }

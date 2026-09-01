@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Package, Clock, CheckCircle, Truck, XCircle, RotateCw, Box } from 'lucide-react'
+import { Package, Clock, CheckCircle, Truck, XCircle, RotateCw, Box, ShoppingBag } from 'lucide-react'
 import { useTenant } from '@/features/core/TenantProvider'
 import { crmService, type Order } from '../dashboard/services/crm.service'
+import { OrderDetailsDrawer } from './components/OrderDetailsDrawer'
+import { toast } from 'sonner'
 
 const ORDER_STATUSES = [
   { id: 'pending', label: 'Pendiente', icon: Clock, color: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
@@ -27,13 +28,26 @@ export function OrdersView() {
 
   const updateStatus = useMutation({
     mutationFn: ({ id, status }: { id: string, status: Order['status'] }) => crmService.updateOrderStatus(id, status),
+    onMutate: async () => {
+      // Optimistic update logic is handled by local state
+    },
     onSuccess: () => {
+      toast.success('Estado del pedido actualizado')
       queryClient.invalidateQueries({ queryKey: ['crm-orders', tenant?.id] })
+      queryClient.invalidateQueries({ queryKey: ['dashboardStats', tenant?.id] })
+    },
+    onError: () => {
+      toast.error('Error al actualizar el estado')
+      // Revert optimistic update by refreshing from server
+      setLocalOrders(orders)
     }
   })
 
   // Local state for optimistic drag and drop
   const [localOrders, setLocalOrders] = useState<any[]>([])
+  
+  // Modal state
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
 
   useEffect(() => {
     setLocalOrders(orders)
@@ -51,6 +65,10 @@ export function OrdersView() {
     e.preventDefault()
     const orderId = e.dataTransfer.getData('orderId')
     
+    // Prevent dropping in same status
+    const order = localOrders.find(o => o.id === orderId)
+    if (!order || order.status === statusId) return
+
     // Optimistic update
     setLocalOrders(current => current.map(o => 
       o.id === orderId ? { ...o, status: statusId } : o
@@ -58,6 +76,15 @@ export function OrdersView() {
 
     // Real update
     updateStatus.mutate({ id: orderId, status: statusId as Order['status'] })
+  }
+
+  const handleStatusChange = (orderId: string, newStatus: string) => {
+    // Optimistic update
+    setLocalOrders(current => current.map(o => 
+      o.id === orderId ? { ...o, status: newStatus } : o
+    ))
+    // Real update
+    updateStatus.mutate({ id: orderId, status: newStatus as Order['status'] })
   }
 
   if (isLoading) {
@@ -76,16 +103,9 @@ export function OrdersView() {
             Pedidos
           </h1>
           <p className="text-[15px] text-zinc-500 mt-1">
-            Tablero Kanban interactivo para gestionar tus ventas por WhatsApp
+            Tablero Kanban interactivo para gestionar tus ventas
           </p>
         </div>
-        <Link 
-          to="/dashboard/orders/new"
-          className="inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors bg-zinc-900 text-zinc-50 hover:bg-zinc-900/90 h-10 px-4 py-2"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Nuevo Pedido
-        </Link>
       </div>
 
       {/* Kanban Board */}
@@ -120,31 +140,33 @@ export function OrdersView() {
                       key={order.id}
                       draggable
                       onDragStart={(e) => handleDragStart(e, order.id)}
-                      className="bg-white p-4 rounded-lg shadow-sm border border-zinc-200 cursor-grab active:cursor-grabbing hover:border-zinc-300 transition-colors"
+                      onClick={() => setSelectedOrderId(order.id)}
+                      className="bg-white p-4 rounded-xl shadow-sm border border-zinc-200 cursor-pointer hover:border-store-primary hover:shadow-md transition-all active:cursor-grabbing group relative"
                     >
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="text-xs font-mono text-zinc-400">
+                      <div className="flex justify-between items-start mb-3">
+                        <span className="text-xs font-mono font-bold text-zinc-400 group-hover:text-store-primary transition-colors">
                           #{order.id.slice(0, 8)}
                         </span>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${status.color}`}>
+                        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${status.color}`}>
                           {status.label}
                         </span>
                       </div>
                       
-                      <div className="mb-3">
-                        <p className="text-sm font-semibold text-zinc-900">
+                      <div className="mb-4">
+                        <p className="text-sm font-bold text-zinc-900 truncate">
                           {order.customers?.first_name} {order.customers?.last_name || ''}
                         </p>
-                        <p className="text-xs text-zinc-500 truncate">
+                        <p className="text-[11px] text-zinc-500 mt-0.5 truncate flex items-center gap-1">
                           {order.customers?.phone || order.customers?.email}
                         </p>
                       </div>
 
                       <div className="flex justify-between items-center border-t border-zinc-100 pt-3">
-                        <span className="text-xs font-medium text-zinc-500">
+                        <span className="text-[11px] font-medium text-zinc-400 flex items-center gap-1">
+                          <ShoppingBag className="w-3 h-3" />
                           {new Date(order.created_at).toLocaleDateString()}
                         </span>
-                        <span className="text-sm font-bold text-zinc-900">
+                        <span className="text-sm font-black text-store-primary">
                           S/ {Number(order.total_amount).toFixed(2)}
                         </span>
                       </div>
@@ -162,6 +184,13 @@ export function OrdersView() {
           })}
         </div>
       </div>
+      
+      <OrderDetailsDrawer 
+        orderId={selectedOrderId} 
+        isOpen={!!selectedOrderId}
+        onClose={() => setSelectedOrderId(null)}
+        onStatusChange={handleStatusChange}
+      />
     </div>
   )
 }

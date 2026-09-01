@@ -1,142 +1,146 @@
 import { supabase } from '@/lib/supabase/client'
-import type { Product, Category, Collection } from '@/types/catalog'
+import type { PublicProduct, PublicCategory, PublicCollection, PublicTenant, PublicSettings } from '@/types/catalog'
 
-// Force TS server reload
+export interface CatalogData {
+  tenant: PublicTenant
+  settings: PublicSettings
+  categories: PublicCategory[]
+  collections: PublicCollection[]
+  products: PublicProduct[]
+}
+
+// Cache en memoria para evitar llamadas redundantes a RPC
+let cachedCatalog: CatalogData | null = null
+
 export const catalogService = {
-  // Get active tenant for public viewing
+  // 1. Get active tenant via RPC get_public_catalog
   async getTenantByHostname(hostname: string | null) {
-    let query = supabase.from('tenants').select('*, tenant_settings(*)').eq('status', 'active')
+    if (!hostname) hostname = window.location.hostname
+    const cleanHostname = hostname.replace(/^www\./, '')
     
-    if (hostname) {
-      // Usar un filtro 'or' para buscar por slug O por custom_domain
-      // Si el hostname es "mi-tienda", buscará slug = "mi-tienda" o custom_domain = "mi-tienda"
-      // Si el hostname es "cliente-a.com", buscará slug = "cliente-a.com" o custom_domain = "cliente-a.com"
-      query = query.or(`slug.eq.${hostname},custom_domain.eq.${hostname}`)
+    const isLocalhost = cleanHostname === 'localhost' || cleanHostname === '127.0.0.1'
+    const configuredSharedDomain = import.meta.env.VITE_SHARED_DOMAIN as string | undefined
+    
+    // Consideramos "dominio compartido" a localhost, *.vercel.app, o un dominio principal SaaS
+    const isSharedDomain = isLocalhost || 
+                           cleanHostname.endsWith('.vercel.app') || 
+                           (configuredSharedDomain && cleanHostname === configuredSharedDomain)
+
+    let p_slug = cleanHostname
+
+    if (isSharedDomain) {
+      const pathSegment = window.location.pathname.split('/')[1]
+      const reservedRoutes = ['login', 'register', 'dashboard', 'catalog', 'category', 'collection', 'product', 'wishlist']
+      
+      if (pathSegment && !reservedRoutes.includes(pathSegment)) {
+        p_slug = pathSegment
+      } else if (isLocalhost) {
+        p_slug = (import.meta.env.VITE_DEFAULT_TENANT_SLUG as string) || 'demo'
+      } else {
+        p_slug = 'demo'
+      }
     } else {
-      // For local development fallback to first active tenant
-      query = query.limit(1)
+      // Para dominios personalizados, el slug de búsqueda es el propio dominio.
+      // get_public_catalog evalúa: slug = p_slug OR custom_domain = p_slug
+      p_slug = cleanHostname
     }
 
-    const { data, error } = await query.maybeSingle()
+    // @ts-expect-error: LIMITACIÓN - @supabase/postgrest-js ^2.x evalúa 'Args' a 'never' por exceder el límite de profundidad de instanciación del compilador TS al parsear el Schema global generado, asumiendo erróneamente que la función no toma argumentos.
+    const { data, error } = await supabase.rpc('get_public_catalog', { p_slug })
     if (error) throw error
-    return data
+    if (!data) throw new Error('Tenant not found')
+
+    // Casting explícito del Json devuelto por la RPC hacia nuestro DTO tipado
+    cachedCatalog = data as unknown as CatalogData
+
+    // Simulamos la estructura antigua para que StoreProvider no se rompa
+    return {
+      ...cachedCatalog!.tenant,
+      tenant_settings: cachedCatalog!.settings
+    }
   },
 
-  async getCategories(tenantId: string): Promise<Category[]> {
-    const { data, error } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('tenant_id', tenantId)
-      .eq('is_active', true)
-      .order('position', { ascending: true })
-
-    if (error) throw error
-    return data as Category[]
+  async getCategories(_tenantId: string): Promise<PublicCategory[]> {
+    if (cachedCatalog) return cachedCatalog.categories
+    return []
   },
 
-  async getCollections(tenantId: string): Promise<Collection[]> {
-    const { data, error } = await supabase
-      .from('collections')
-      .select('*')
-      .eq('tenant_id', tenantId)
-      .eq('is_active', true)
-      .order('position', { ascending: true })
-
-    if (error) throw error
-    return data as Collection[]
+  async getCollections(_tenantId: string): Promise<PublicCollection[]> {
+    if (cachedCatalog) return cachedCatalog.collections
+    return []
   },
 
-  async getFeaturedProducts(tenantId: string): Promise<Product[]> {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*, product_images(*)')
-      .eq('tenant_id', tenantId)
-      .eq('status', 'published')
-      .eq('featured', true)
-      .order('position', { ascending: true })
-      .limit(8)
-
-    if (error) throw error
-    return data as Product[]
+  async getFeaturedProducts(_tenantId: string): Promise<PublicProduct[]> {
+    if (cachedCatalog) {
+      return cachedCatalog.products
+        .filter(p => p.featured)
+        .slice(0, 8)
+    }
+    return []
   },
 
-  async getNewProducts(tenantId: string): Promise<Product[]> {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*, product_images(*)')
-      .eq('tenant_id', tenantId)
-      .eq('status', 'published')
-      .order('created_at', { ascending: false })
-      .limit(8)
-
-    if (error) throw error
-    return data as Product[]
+  async getNewProducts(_tenantId: string): Promise<PublicProduct[]> {
+    if (cachedCatalog) {
+      return [...cachedCatalog.products]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 8)
+    }
+    return []
   },
 
-  async getProducts(tenantId: string, categorySlug?: string, collectionSlug?: string): Promise<Product[]> {
-    let query = supabase
-      .from('products')
-      .select('*, product_images(*), categories!inner(*)')
-      .eq('tenant_id', tenantId)
-      .eq('status', 'published')
+  async getProducts(_tenantId: string, categorySlug?: string, collectionSlug?: string, searchQuery?: string): Promise<PublicProduct[]> {
+    if (!cachedCatalog) return []
+
+    let products = cachedCatalog.products
 
     if (categorySlug) {
-      query = query.eq('categories.slug', categorySlug)
-    }
-
-    // Note: To filter by collection we need a slightly more complex query in Supabase.
-    // We'll filter products by getting those that are in the product_collections table for that collection.
-    if (collectionSlug) {
-      const { data: coll } = await supabase
-        .from('collections')
-        .select('id')
-        .eq('tenant_id', tenantId)
-        .eq('slug', collectionSlug)
-        .single()
-      
-      if (coll) {
-        // Query products that have a product_collections row with this collection_id
-        const { data: pc } = await supabase.from('product_collections').select('product_id').eq('collection_id', (coll as any).id)
-        if (pc && pc.length > 0) {
-          query = query.in('id', pc.map((p: any) => p.product_id))
-        } else {
-          return []
-        }
+      // INCOMPATIBILIDAD: El RPC solo devuelve category_id en el producto, no un inner join con el slug.
+      // Buscamos la categoría en la lista cachead para obtener el ID.
+      const cat = cachedCatalog.categories.find(c => c.slug === categorySlug)
+      if (cat) {
+        products = products.filter(p => p.category_id === cat.id)
       } else {
-        return []
+        products = []
       }
     }
 
-    const { data, error } = await query.order('position', { ascending: true }).order('created_at', { ascending: false })
-    if (error) throw error
-    return data as Product[]
+    if (collectionSlug) {
+      // INCOMPATIBILIDAD: El RPC devuelve product_ids dentro de la colección.
+      const coll = cachedCatalog.collections.find(c => c.slug === collectionSlug)
+      if (coll && (coll as any).product_ids) {
+        products = products.filter(p => (coll as any).product_ids.includes(p.id))
+      } else {
+        products = []
+      }
+    }
+
+    if (searchQuery) {
+      const term = searchQuery.toLowerCase()
+      products = products.filter(p => p.name.toLowerCase().includes(term))
+    }
+
+    return products
   },
 
-  async searchProducts(tenantId: string, queryTerm: string): Promise<Product[]> {
-    if (!queryTerm || queryTerm.length < 2) return []
-
-    const { data, error } = await supabase
-      .from('products')
-      .select('*, product_images(*)')
-      .eq('tenant_id', tenantId)
-      .eq('status', 'published')
-      .ilike('name', `%${queryTerm}%`)
-      .limit(5)
-
-    if (error) throw error
-    return data as Product[]
+  async searchProducts(_tenantId: string, queryTerm: string): Promise<PublicProduct[]> {
+    if (!cachedCatalog || !queryTerm || queryTerm.length < 2) return []
+    const term = queryTerm.toLowerCase()
+    return cachedCatalog.products
+      .filter(p => p.name.toLowerCase().includes(term))
+      .slice(0, 5)
   },
 
-  async getProductBySlug(tenantId: string, slug: string) {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*, product_images(*), product_variants(*), categories(*)')
-      .eq('tenant_id', tenantId)
-      .eq('slug', slug)
-      .eq('status', 'published')
-      .maybeSingle()
+  async getProductBySlug(_tenantId: string, slug: string) {
+    if (!cachedCatalog) return null
+    const product = cachedCatalog.products.find(p => p.slug === slug)
+    if (!product) return null
 
-    if (error) throw error
-    return data
+    // INCOMPATIBILIDAD: El código antiguo esperaba categories(*) anidado.
+    // Lo hidratamos manualmente desde cache:
+    const category = cachedCatalog.categories.find(c => c.id === product.category_id)
+    return {
+      ...product,
+      categories: category || null
+    }
   }
 }

@@ -92,6 +92,13 @@ export function useCart() {
     setItems([])
   }
 
+  const syncWithProducts = (validIds: string[]) => {
+    const filtered = items.filter(i => validIds.includes(i.productId))
+    if (filtered.length !== items.length) {
+      setItems(filtered)
+    }
+  }
+
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
   const totalAmount = items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
 
@@ -105,5 +112,6 @@ export function useCart() {
     totalAmount,
     isOpen,
     setIsOpen,
+    syncWithProducts
   }
 }

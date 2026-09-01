@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -8,9 +8,10 @@ import { Card } from '@/components/ui/card'
 import { X, UploadCloud, Plus, Trash2 } from 'lucide-react'
 import { useCategories } from '../../categories/hooks/useCategories'
 import { useCollections } from '../../collections/hooks/useCollections'
-import type { CreateProductPayload, CreateVariantPayload } from '../services/products.service'
+import type { UpdateProductPayload, UpdateVariantPayload, UpdateImageKeep } from '../services/products.service'
 
 const variantSchema = z.object({
+  id: z.string().optional(),
   name: z.string().min(1, 'El nombre de variante es requerido'),
   sku: z.string().optional(),
   price: z.coerce.number().optional(),
@@ -35,23 +36,38 @@ const productSchema = z.object({
 
 type ProductFormValues = z.infer<typeof productSchema>
 
-interface ProductFormProps {
+export interface ProductFormProps {
+  initialData?: any // Product with variants, images, and collections
   onSuccess: (data: {
-    product: CreateProductPayload
+    product: UpdateProductPayload
     collectionIds: string[]
-    variants: CreateVariantPayload[]
+    variants: UpdateVariantPayload[]
     imageFiles: File[]
+    imagesToDelete: string[]
+    imagesToKeep: UpdateImageKeep[]
   }) => Promise<void>
   onCancel: () => void
   isSubmitting?: boolean
 }
 
-export function ProductForm({ onSuccess, onCancel, isSubmitting }: ProductFormProps) {
+interface ExistingImage {
+  id: string
+  url: string
+  position: number
+  is_primary: boolean
+}
+
+export function ProductForm({ initialData, onSuccess, onCancel, isSubmitting }: ProductFormProps) {
   const { categories } = useCategories()
   const { collections } = useCollections()
-  const [imageFiles, setImageFiles] = useState<File[]>([])
   
-  const { register, handleSubmit, control, formState: { errors }, watch, setValue } = useForm<z.infer<typeof productSchema>>({
+  const [imageFiles, setImageFiles] = useState<File[]>([])
+  const [existingImages, setExistingImages] = useState<ExistingImage[]>([])
+  const [deletedImageIds, setDeletedImageIds] = useState<string[]>([])
+  
+  const isEditing = !!initialData
+
+  const { register, handleSubmit, control, formState: { errors }, watch, setValue, reset } = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
     defaultValues: {
       status: 'draft',
@@ -61,6 +77,45 @@ export function ProductForm({ onSuccess, onCancel, isSubmitting }: ProductFormPr
       variants: []
     }
   })
+
+  useEffect(() => {
+    if (initialData) {
+      reset({
+        name: initialData.name,
+        slug: initialData.slug,
+        description: initialData.description || '',
+        short_description: initialData.short_description || '',
+        sku: initialData.sku || '',
+        price: initialData.price,
+        compare_at_price: initialData.compare_at_price || undefined,
+        category_id: initialData.category_id,
+        status: initialData.status as any,
+        featured: initialData.featured,
+        position: initialData.position,
+        collectionIds: initialData.product_collections?.map((c: any) => c.collection_id) || [],
+        variants: initialData.product_variants?.map((v: any) => ({
+          id: v.id,
+          name: v.name,
+          sku: v.sku || '',
+          price: v.price || undefined,
+          stock: v.stock
+        })) || []
+      })
+
+      if (initialData.product_images) {
+        setExistingImages(
+          initialData.product_images
+            .map((img: any) => ({
+              id: img.id,
+              url: img.public_url,
+              position: img.position,
+              is_primary: img.is_primary
+            }))
+            .sort((a: any, b: any) => a.position - b.position)
+        )
+      }
+    }
+  }, [initialData, reset])
 
   const { fields: variantFields, append: appendVariant, remove: removeVariant } = useFieldArray({
     control,
@@ -79,8 +134,13 @@ export function ProductForm({ onSuccess, onCancel, isSubmitting }: ProductFormPr
     }
   }
 
-  const removeImage = (index: number) => {
+  const removeNewImage = (index: number) => {
     setImageFiles(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const removeExistingImage = (id: string) => {
+    setExistingImages(prev => prev.filter(img => img.id !== id))
+    setDeletedImageIds(prev => [...prev, id])
   }
 
   const toggleCollection = (collectionId: string) => {
@@ -93,7 +153,7 @@ export function ProductForm({ onSuccess, onCancel, isSubmitting }: ProductFormPr
   }
 
   const submitForm = async (data: ProductFormValues) => {
-    const productPayload: CreateProductPayload = {
+    const productPayload: UpdateProductPayload = {
       name: data.name,
       slug: data.slug,
       description: data.description || null,
@@ -107,18 +167,44 @@ export function ProductForm({ onSuccess, onCancel, isSubmitting }: ProductFormPr
       position: data.position
     }
 
-    const variantsPayload: CreateVariantPayload[] = data.variants.map(v => ({
-      name: v.name,
-      sku: v.sku || null,
-      price: v.price || null,
-      stock: v.stock
-    }))
+    const variantsPayload: UpdateVariantPayload[] = data.variants.map(v => {
+      const payload: UpdateVariantPayload = {
+        name: v.name,
+        sku: v.sku || null,
+        price: v.price || null,
+        stock: v.stock
+      }
+      if (v.id) {
+        payload.id = v.id
+      }
+      return payload
+    })
+    
+    // Normalize existing images positions in case of deletions
+    let hasPrimary = false;
+    const imagesToKeep = existingImages.map((img, i) => {
+      let isPrimary = false;
+      if (img.is_primary && !hasPrimary) {
+        isPrimary = true;
+        hasPrimary = true;
+      } else if (i === 0 && !hasPrimary && !existingImages.some(e => e.is_primary)) {
+        isPrimary = true;
+        hasPrimary = true;
+      }
+      return {
+        id: img.id,
+        position: i,
+        is_primary: isPrimary
+      }
+    })
 
     await onSuccess({
       product: productPayload,
       collectionIds: data.collectionIds,
       variants: variantsPayload,
-      imageFiles: imageFiles
+      imageFiles: imageFiles,
+      imagesToDelete: deletedImageIds,
+      imagesToKeep: imagesToKeep
     })
   }
 
@@ -127,13 +213,15 @@ export function ProductForm({ onSuccess, onCancel, isSubmitting }: ProductFormPr
       {/* Header Actions */}
       <div className="flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md z-10 py-4 border-b border-zinc-100">
         <div>
-          <h2 className="text-2xl font-bold text-zinc-900">Nuevo Producto</h2>
-          <p className="text-sm text-zinc-500">Crea un producto asombroso para tu catálogo.</p>
+          <h2 className="text-2xl font-bold text-zinc-900">{isEditing ? 'Editar Producto' : 'Nuevo Producto'}</h2>
+          <p className="text-sm text-zinc-500">
+            {isEditing ? 'Actualiza los detalles de este producto en el catálogo.' : 'Crea un producto asombroso para tu catálogo.'}
+          </p>
         </div>
         <div className="flex gap-3">
           <Button type="button" variant="ghost" onClick={onCancel} className="rounded-xl">Cancelar</Button>
           <Button type="submit" disabled={isSubmitting} className="bg-primary hover:bg-primary/90 text-white rounded-xl shadow-sm">
-            {isSubmitting ? 'Guardando...' : 'Crear Producto'}
+            {isSubmitting ? 'Guardando...' : (isEditing ? 'Guardar Cambios' : 'Crear Producto')}
           </Button>
         </div>
       </div>
@@ -183,17 +271,32 @@ export function ProductForm({ onSuccess, onCancel, isSubmitting }: ProductFormPr
               <p className="text-xs text-zinc-500 mt-1">PNG, JPG o WEBP (Max. 5MB)</p>
             </div>
 
-            {imageFiles.length > 0 && (
+            {(existingImages.length > 0 || imageFiles.length > 0) && (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
-                {imageFiles.map((file, idx) => (
-                  <div key={idx} className="relative group aspect-square rounded-xl overflow-hidden border border-zinc-100 bg-zinc-50">
-                    <img src={URL.createObjectURL(file)} alt="Preview" className="w-full h-full object-cover" />
-                    <button type="button" onClick={() => removeImage(idx)} className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-rose-50 text-rose-500">
+                {/* Existing Images */}
+                {existingImages.map((img, idx) => (
+                  <div key={img.id} className="relative group aspect-square rounded-xl overflow-hidden border border-zinc-200 shadow-sm bg-white">
+                    <img src={img.url} alt="Producto" className="w-full h-full object-cover" />
+                    <button type="button" onClick={() => removeExistingImage(img.id)} className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-rose-50 text-rose-500">
                       <X className="w-3.5 h-3.5" />
                     </button>
-                    {idx === 0 && (
+                    {(img.is_primary || idx === 0) && (
                       <span className="absolute bottom-2 left-2 px-2 py-1 bg-zinc-900/80 text-white text-[10px] rounded-md font-medium">Principal</span>
                     )}
+                  </div>
+                ))}
+
+                {/* New Images */}
+                {imageFiles.map((file, idx) => (
+                  <div key={`new-${idx}`} className="relative group aspect-square rounded-xl overflow-hidden border border-zinc-100 bg-zinc-50">
+                    <img src={URL.createObjectURL(file)} alt="Preview" className="w-full h-full object-cover" />
+                    <button type="button" onClick={() => removeNewImage(idx)} className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-rose-50 text-rose-500">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                    {existingImages.length === 0 && idx === 0 && (
+                      <span className="absolute bottom-2 left-2 px-2 py-1 bg-zinc-900/80 text-white text-[10px] rounded-md font-medium">Principal</span>
+                    )}
+                    <span className="absolute bottom-2 right-2 px-2 py-1 bg-blue-600/80 text-white text-[10px] rounded-md font-medium shadow-sm">Nueva</span>
                   </div>
                 ))}
               </div>
@@ -217,6 +320,7 @@ export function ProductForm({ onSuccess, onCancel, isSubmitting }: ProductFormPr
               <div className="space-y-4">
                 {variantFields.map((field, index) => (
                   <div key={field.id} className="flex items-start gap-4 p-4 bg-zinc-50 rounded-xl border border-zinc-100 relative group">
+                    <input type="hidden" {...register(`variants.${index}.id`)} />
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 flex-1">
                       <div className="space-y-1">
                         <label className="text-xs font-medium text-zinc-700">Nombre (Ej: XL Rojo)</label>
@@ -228,7 +332,7 @@ export function ProductForm({ onSuccess, onCancel, isSubmitting }: ProductFormPr
                       </div>
                       <div className="space-y-1">
                         <label className="text-xs font-medium text-zinc-700">Precio (Opcional)</label>
-                        <Input type="number" {...register(`variants.${index}.price`)} className="bg-white text-sm h-9" />
+                        <Input type="number" step="0.01" {...register(`variants.${index}.price`)} className="bg-white text-sm h-9" />
                       </div>
                       <div className="space-y-1">
                         <label className="text-xs font-medium text-zinc-700">Stock</label>
@@ -334,4 +438,3 @@ export function ProductForm({ onSuccess, onCancel, isSubmitting }: ProductFormPr
     </form>
   )
 }
-

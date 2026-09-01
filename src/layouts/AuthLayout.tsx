@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import { Shirt, Gem, ShoppingBag, TrendingUp, ShieldCheck, Clock, Smartphone, Lock } from 'lucide-react'
+import { ScrollToTop } from '@/components/layout/ScrollToTop'
 
 // Utilizaremos Shirt (camisa) como logo para simular el de la moda
 
@@ -9,6 +10,7 @@ export function AuthLayout() {
 
   return (
     <div className="min-h-screen w-full flex bg-background font-sans">
+      <ScrollToTop />
       {/* Lado Izquierdo - Visual / Branding (Oculto en móvil) */}
       <div className={`hidden lg:flex w-[45%] relative flex-col justify-between p-12 overflow-hidden ${isLogin ? 'text-white' : 'text-zinc-800'}`}>
         {/* Imagen de fondo (El usuario colocará estas imágenes en /public/images/) */}

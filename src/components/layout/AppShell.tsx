@@ -3,8 +3,8 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 import { Header } from './Header'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
-import { Toaster } from '@/components/ui/sonner'
 import { Home, Package, ShoppingCart, Users, MoreHorizontal } from 'lucide-react'
+import { ScrollToTop } from '@/components/layout/ScrollToTop'
 
 export function AppShell() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -12,6 +12,7 @@ export function AppShell() {
 
   return (
     <div className="h-screen bg-background flex text-foreground font-sans overflow-hidden">
+      <ScrollToTop />
       {/* Desktop Sidebar */}
       <Sidebar />
 
@@ -42,8 +43,6 @@ export function AppShell() {
           <NavItem icon={<MoreHorizontal className="h-5 w-5" />} label="Más" active={false} onClick={() => setIsMobileMenuOpen(true)} />
         </div>
       </div>
-
-      <Toaster />
     </div>
   )
 }
