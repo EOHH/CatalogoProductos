@@ -49,7 +49,7 @@ export function CategoryBanners() {
           <h2 className="text-[11px] font-bold text-store-primary uppercase tracking-[0.3em] mb-3">
             Explora Tu Estilo
           </h2>
-          <h3 className="text-3xl md:text-4xl lg:text-5xl font-serif text-zinc-900 tracking-tight">
+          <h3 className="text-3xl md:text-4xl lg:text-5xl font-serif text-foreground tracking-tight">
             Colecciones Icónicas
           </h3>
         </div>

@@ -102,18 +102,18 @@ export function CartDrawer() {
       />
 
       {/* Drawer */}
-      <div className="fixed inset-y-0 right-0 z-[101] w-full max-w-md bg-[#fcf9f9] shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out font-sans">
+      <div className="fixed inset-y-0 right-0 z-[101] w-full max-w-md bg-background shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out font-sans">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 bg-white border-b border-zinc-100 z-10 shadow-sm relative">
+        <div className="flex items-center justify-between px-6 py-5 bg-card border-b border-zinc-100 dark:border-zinc-800 z-10 shadow-sm relative">
           <div className="flex items-center gap-3">
             <ShoppingCart className="w-5 h-5 text-store-primary" />
-            <h2 className="text-lg font-serif text-zinc-900">Tu Carrito</h2>
+            <h2 className="text-lg font-serif text-foreground">Tu Carrito</h2>
           </div>
           <button
             onClick={() => !isSubmitting && setIsOpen(false)}
             disabled={isSubmitting}
-            className="p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-50 rounded-full transition-colors disabled:opacity-50"
+            className="p-2 text-muted-foreground hover:text-foreground hover:bg-zinc-50 dark:bg-zinc-900/50 rounded-full transition-colors disabled:opacity-50"
           >
             <X className="w-5 h-5" />
           </button>
@@ -124,15 +124,15 @@ export function CartDrawer() {
 
           {/* VIEW: Empty Cart */}
           {!isCheckingOut && items.length === 0 && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-white opacity-80">
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-card opacity-80">
               <ShoppingCart className="w-16 h-16 text-zinc-200 mb-6" strokeWidth={1} />
-              <p className="text-lg font-serif text-zinc-900 mb-2">Tu carrito está vacío</p>
-              <p className="text-sm text-zinc-500 max-w-[250px]">
+              <p className="text-lg font-serif text-foreground mb-2">Tu carrito está vacío</p>
+              <p className="text-sm text-muted-foreground max-w-[250px]">
                 Agrega productos hermosos a tu carrito para continuar con la compra.
               </p>
               <button
                 onClick={() => setIsOpen(false)}
-                className="mt-8 px-8 py-3 rounded-xl border border-zinc-200 text-zinc-600 text-[11px] font-bold uppercase tracking-widest hover:border-store-primary hover:text-store-primary hover:bg-store-primary/5 transition-colors"
+                className="mt-8 px-8 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 text-muted-foreground text-[11px] font-bold uppercase tracking-widest hover:border-store-primary hover:text-store-primary hover:bg-store-primary/5 transition-colors"
               >
                 Explorar Catálogo
               </button>
@@ -143,46 +143,46 @@ export function CartDrawer() {
           {!isCheckingOut && items.length > 0 && (
             <div className="p-6 space-y-4">
               {items.map(item => (
-                <div key={item.id} className="flex gap-4 p-4 rounded-2xl bg-white border border-zinc-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] relative group hover:border-zinc-200 transition-colors">
+                <div key={item.id} className="flex gap-4 p-4 rounded-2xl bg-card border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_rgb(0,0,0,0.02)] relative group hover:border-zinc-200 dark:border-zinc-800 transition-colors">
 
                   {/* Remove Button */}
                   <button
                     onClick={() => removeItem(item.id)}
-                    className="absolute -top-2 -right-2 w-7 h-7 bg-white rounded-full border border-zinc-200 shadow-sm flex items-center justify-center text-zinc-400 hover:text-red-500 hover:border-red-200 transition-colors md:opacity-0 md:group-hover:opacity-100"
+                    className="absolute -top-2 -right-2 w-7 h-7 bg-card rounded-full border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center justify-center text-muted-foreground hover:text-red-500 hover:border-red-200 transition-colors md:opacity-0 md:group-hover:opacity-100"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
 
                   {/* Image */}
-                  <div className="w-20 h-24 bg-white rounded-xl overflow-hidden flex-shrink-0 border border-zinc-50 p-2">
+                  <div className="w-20 h-24 bg-card rounded-xl overflow-hidden flex-shrink-0 border border-zinc-50 p-2">
                     {item.imageUrl ? (
                       <img src={item.imageUrl} alt={item.name} className="w-full h-full object-contain" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-zinc-400 text-xs">Sin imagen</div>
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">Sin imagen</div>
                     )}
                   </div>
 
                   {/* Details */}
                   <div className="flex flex-col justify-between flex-1">
                     <div>
-                      <h3 className="text-sm font-bold text-zinc-900 leading-tight mb-1 pr-4">{item.name}</h3>
+                      <h3 className="text-sm font-bold text-foreground leading-tight mb-1 pr-4">{item.name}</h3>
                       {item.variantName && (
-                        <p className="text-[11px] text-zinc-500 mb-2 uppercase tracking-wide">Opción: {item.variantName}</p>
+                        <p className="text-[11px] text-muted-foreground mb-2 uppercase tracking-wide">Opción: {item.variantName}</p>
                       )}
                     </div>
 
                     <div className="flex items-center justify-between mt-auto">
-                      <div className="flex items-center border border-zinc-200 rounded-lg bg-[#fcf9f9]">
+                      <div className="flex items-center border border-zinc-200 dark:border-zinc-800 rounded-lg bg-background">
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="w-7 h-7 flex items-center justify-center text-zinc-500 hover:text-store-primary"
+                          className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-store-primary"
                         >
                           <Minus className="w-3 h-3" />
                         </button>
-                        <span className="w-6 text-center text-xs font-bold text-zinc-900">{item.quantity}</span>
+                        <span className="w-6 text-center text-xs font-bold text-foreground">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="w-7 h-7 flex items-center justify-center text-zinc-500 hover:text-store-primary"
+                          className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-store-primary"
                         >
                           <Plus className="w-3 h-3" />
                         </button>
@@ -199,25 +199,25 @@ export function CartDrawer() {
 
           {/* VIEW: Checkout Form Modal */}
           {isCheckingOut && (
-            <div className="p-6 h-full flex flex-col bg-white">
+            <div className="p-6 h-full flex flex-col bg-card">
               <button
                 onClick={() => setIsCheckingOut(false)}
-                className="self-start text-[11px] font-bold text-zinc-500 hover:text-store-primary uppercase tracking-widest flex items-center gap-2 mb-8"
+                className="self-start text-[11px] font-bold text-muted-foreground hover:text-store-primary uppercase tracking-widest flex items-center gap-2 mb-8"
               >
                 <ArrowRight className="w-4 h-4 rotate-180" />
                 Volver al carrito
               </button>
 
               <div className="mb-8">
-                <h3 className="text-2xl font-serif text-zinc-900 mb-2">Tus Datos</h3>
-                <p className="text-sm text-zinc-500">
-                  Por favor, ingresa tus datos para registrar tu pedido de <span className="font-bold text-zinc-900">S/ {totalAmount.toFixed(2)}</span>.
+                <h3 className="text-2xl font-serif text-foreground mb-2">Tus Datos</h3>
+                <p className="text-sm text-muted-foreground">
+                  Por favor, ingresa tus datos para registrar tu pedido de <span className="font-bold text-foreground">S/ {totalAmount.toFixed(2)}</span>.
                 </p>
               </div>
 
               <form id="checkout-form" onSubmit={handleCheckoutSubmit} className="space-y-5 flex-1">
                 <div>
-                  <label className="block text-[11px] font-bold text-zinc-700 uppercase tracking-widest mb-2">
+                  <label className="block text-[11px] font-bold text-foreground uppercase tracking-widest mb-2">
                     Nombre <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -227,12 +227,12 @@ export function CartDrawer() {
                     onChange={(e) => setFirstName(e.target.value)}
                     placeholder="Ej. Daren"
                     disabled={isSubmitting}
-                    className="w-full bg-[#fcf9f9] border border-zinc-200 text-zinc-900 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-store-primary/20 focus:border-store-primary transition-all disabled:opacity-60"
+                    className="w-full bg-background border border-zinc-200 dark:border-zinc-800 text-foreground text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-store-primary/20 focus:border-store-primary transition-all disabled:opacity-60"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold text-zinc-700 uppercase tracking-widest mb-2">
-                    Apellido <span className="text-zinc-400 font-normal lowercase tracking-normal">(Opcional)</span>
+                  <label className="block text-[11px] font-bold text-foreground uppercase tracking-widest mb-2">
+                    Apellido <span className="text-muted-foreground font-normal lowercase tracking-normal">(Opcional)</span>
                   </label>
                   <input
                     type="text"
@@ -240,11 +240,11 @@ export function CartDrawer() {
                     onChange={(e) => setLastName(e.target.value)}
                     placeholder="Ej. Store"
                     disabled={isSubmitting}
-                    className="w-full bg-[#fcf9f9] border border-zinc-200 text-zinc-900 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-store-primary/20 focus:border-store-primary transition-all disabled:opacity-60"
+                    className="w-full bg-background border border-zinc-200 dark:border-zinc-800 text-foreground text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-store-primary/20 focus:border-store-primary transition-all disabled:opacity-60"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold text-zinc-700 uppercase tracking-widest mb-2">
+                  <label className="block text-[11px] font-bold text-foreground uppercase tracking-widest mb-2">
                     Celular / WhatsApp <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -254,7 +254,7 @@ export function CartDrawer() {
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="Ej. +51 987 654 321"
                     disabled={isSubmitting}
-                    className="w-full bg-[#fcf9f9] border border-zinc-200 text-zinc-900 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-store-primary/20 focus:border-store-primary transition-all disabled:opacity-60"
+                    className="w-full bg-background border border-zinc-200 dark:border-zinc-800 text-foreground text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-store-primary/20 focus:border-store-primary transition-all disabled:opacity-60"
                   />
                 </div>
               </form>
@@ -265,12 +265,12 @@ export function CartDrawer() {
 
         {/* Footer / Checkout Button */}
         {items.length > 0 && (
-          <div className="border-t border-zinc-100 p-6 bg-white z-10 shadow-[0_-10px_30px_rgb(0,0,0,0.03)]">
+          <div className="border-t border-zinc-100 dark:border-zinc-800 p-6 bg-card z-10 shadow-[0_-10px_30px_rgb(0,0,0,0.03)]">
             {!isCheckingOut ? (
               <>
                 <div className="flex justify-between items-center mb-6">
-                  <span className="text-zinc-600 text-sm font-medium">Total Estimado</span>
-                  <span className="text-2xl font-bold text-zinc-900 tracking-tight">S/ {totalAmount.toFixed(2)}</span>
+                  <span className="text-muted-foreground text-sm font-medium">Total Estimado</span>
+                  <span className="text-2xl font-bold text-foreground tracking-tight">S/ {totalAmount.toFixed(2)}</span>
                 </div>
                 <button
                   onClick={() => setIsCheckingOut(true)}
@@ -306,7 +306,7 @@ export function CartDrawer() {
             )}
 
             {!isCheckingOut && (
-              <p className="text-center text-[10px] text-zinc-400 mt-5 tracking-wide">
+              <p className="text-center text-[10px] text-muted-foreground mt-5 tracking-wide">
                 El costo de envío se coordinará de manera personalizada.
               </p>
             )}

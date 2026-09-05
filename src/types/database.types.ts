@@ -185,6 +185,7 @@ export interface Database {
           status: 'published' | 'draft' | 'archived'
           featured: boolean
           position: number
+          tags: string[] | null
           created_at: string
           updated_at: string
         }
@@ -202,6 +203,7 @@ export interface Database {
           status?: 'published' | 'draft' | 'archived'
           featured?: boolean
           position?: number
+          tags?: string[] | null
           created_at?: string
           updated_at?: string
         }
@@ -219,6 +221,7 @@ export interface Database {
           status?: 'published' | 'draft' | 'archived'
           featured?: boolean
           position?: number
+          tags?: string[] | null
           created_at?: string
           updated_at?: string
         }

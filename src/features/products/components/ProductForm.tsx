@@ -31,6 +31,7 @@ const productSchema = z.object({
   featured: z.boolean(),
   position: z.coerce.number(),
   collectionIds: z.array(z.string()),
+  tagsString: z.string().optional(),
   variants: z.array(variantSchema)
 })
 
@@ -74,6 +75,7 @@ export function ProductForm({ initialData, onSuccess, onCancel, isSubmitting }: 
       featured: false,
       position: 0,
       collectionIds: [],
+      tagsString: '',
       variants: []
     }
   })
@@ -92,6 +94,7 @@ export function ProductForm({ initialData, onSuccess, onCancel, isSubmitting }: 
         status: initialData.status as any,
         featured: initialData.featured,
         position: initialData.position,
+        tagsString: initialData.tags ? initialData.tags.join(', ') : '',
         collectionIds: initialData.product_collections?.map((c: any) => c.collection_id) || [],
         variants: initialData.product_variants?.map((v: any) => ({
           id: v.id,
@@ -164,7 +167,8 @@ export function ProductForm({ initialData, onSuccess, onCancel, isSubmitting }: 
       category_id: data.category_id,
       status: data.status,
       featured: data.featured,
-      position: data.position
+      position: data.position,
+      tags: data.tagsString ? data.tagsString.split(',').map(t => t.trim()).filter(Boolean) : []
     }
 
     const variantsPayload: UpdateVariantPayload[] = data.variants.map(v => {
@@ -211,10 +215,10 @@ export function ProductForm({ initialData, onSuccess, onCancel, isSubmitting }: 
   return (
     <form onSubmit={handleSubmit(submitForm)} className="space-y-8 animate-in fade-in duration-700 font-sans pb-12">
       {/* Header Actions */}
-      <div className="flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md z-10 py-4 border-b border-zinc-100">
+      <div className="flex items-center justify-between sticky top-0 bg-card/80 backdrop-blur-md z-10 py-4 border-b border-zinc-100 dark:border-zinc-800">
         <div>
-          <h2 className="text-2xl font-bold text-zinc-900">{isEditing ? 'Editar Producto' : 'Nuevo Producto'}</h2>
-          <p className="text-sm text-zinc-500">
+          <h2 className="text-2xl font-bold text-foreground">{isEditing ? 'Editar Producto' : 'Nuevo Producto'}</h2>
+          <p className="text-sm text-muted-foreground">
             {isEditing ? 'Actualiza los detalles de este producto en el catálogo.' : 'Crea un producto asombroso para tu catálogo.'}
           </p>
         </div>
@@ -230,54 +234,60 @@ export function ProductForm({ initialData, onSuccess, onCancel, isSubmitting }: 
         {/* Main Column */}
         <div className="lg:col-span-2 space-y-6">
           <Card className="p-6 rounded-[1.5rem] border-none shadow-[0_4px_24px_rgb(0,0,0,0.02)] space-y-6">
-            <h3 className="text-lg font-semibold text-zinc-900">Información General</h3>
+            <h3 className="text-lg font-semibold text-foreground">Información General</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-900">Nombre del Producto</label>
-                <Input {...register('name')} onChange={handleNameChange} className="bg-zinc-50 border-zinc-200 rounded-xl" placeholder="Ej. Zapatillas Nike Air" />
+                <label className="text-sm font-medium text-foreground">Nombre del Producto</label>
+                <Input {...register('name')} onChange={handleNameChange} className="bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl" placeholder="Ej. Zapatillas Nike Air" />
                 {errors.name && <p className="text-rose-500 text-xs">{errors.name.message}</p>}
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-900">Slug URL</label>
-                <Input {...register('slug')} className="bg-zinc-50 border-zinc-200 rounded-xl text-zinc-500" placeholder="zapatillas-nike-air" />
+                <label className="text-sm font-medium text-foreground">Slug URL</label>
+                <Input {...register('slug')} className="bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl text-muted-foreground" placeholder="zapatillas-nike-air" />
                 {errors.slug && <p className="text-rose-500 text-xs">{errors.slug.message}</p>}
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-zinc-900">Descripción Corta</label>
-              <Input {...register('short_description')} className="bg-zinc-50 border-zinc-200 rounded-xl" placeholder="Un resumen atractivo del producto..." />
+              <label className="text-sm font-medium text-foreground">Descripción Corta</label>
+              <Input {...register('short_description')} className="bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl" placeholder="Un resumen atractivo del producto..." />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-zinc-900">Descripción Detallada</label>
+              <label className="text-sm font-medium text-foreground">Descripción Detallada</label>
               <textarea 
                 {...register('description')} 
-                className="w-full min-h-[120px] p-3 text-sm bg-zinc-50 border border-zinc-200 rounded-xl outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                className="w-full min-h-[120px] p-3 text-sm bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                 placeholder="Escribe todo el detalle de tu producto..."
               />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Etiquetas / Filtros (Opcional)</label>
+              <Input {...register('tagsString')} className="bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl" placeholder="Ej. Retro 4, Verano, Oferta Especial (Separadas por comas)" />
+              <p className="text-xs text-muted-foreground">Estas etiquetas aparecerán como botones de filtro en la vista del catálogo.</p>
             </div>
           </Card>
 
           <Card className="p-6 rounded-[1.5rem] border-none shadow-[0_4px_24px_rgb(0,0,0,0.02)] space-y-6">
-            <h3 className="text-lg font-semibold text-zinc-900">Imágenes</h3>
+            <h3 className="text-lg font-semibold text-foreground">Imágenes</h3>
             
-            <div className="border-2 border-dashed border-zinc-200 rounded-xl p-8 text-center hover:bg-zinc-50 transition-colors relative">
+            <div className="border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl p-8 text-center hover:bg-zinc-50 dark:bg-zinc-900/50 transition-colors relative">
               <input type="file" multiple accept="image/*" onChange={handleImageChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-              <UploadCloud className="w-8 h-8 text-zinc-400 mx-auto mb-3" />
-              <p className="text-sm font-medium text-zinc-900">Arrastra imágenes o haz clic para subir</p>
-              <p className="text-xs text-zinc-500 mt-1">PNG, JPG o WEBP (Max. 5MB)</p>
+              <UploadCloud className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
+              <p className="text-sm font-medium text-foreground">Arrastra imágenes o haz clic para subir</p>
+              <p className="text-xs text-muted-foreground mt-1">PNG, JPG o WEBP (Max. 5MB)</p>
             </div>
 
             {(existingImages.length > 0 || imageFiles.length > 0) && (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
                 {/* Existing Images */}
                 {existingImages.map((img, idx) => (
-                  <div key={img.id} className="relative group aspect-square rounded-xl overflow-hidden border border-zinc-200 shadow-sm bg-white">
+                  <div key={img.id} className="relative group aspect-square rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm bg-card">
                     <img src={img.url} alt="Producto" className="w-full h-full object-cover" />
-                    <button type="button" onClick={() => removeExistingImage(img.id)} className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-rose-50 text-rose-500">
+                    <button type="button" onClick={() => removeExistingImage(img.id)} className="absolute top-2 right-2 p-1.5 bg-card/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-rose-50 text-rose-500">
                       <X className="w-3.5 h-3.5" />
                     </button>
                     {(img.is_primary || idx === 0) && (
@@ -288,9 +298,9 @@ export function ProductForm({ initialData, onSuccess, onCancel, isSubmitting }: 
 
                 {/* New Images */}
                 {imageFiles.map((file, idx) => (
-                  <div key={`new-${idx}`} className="relative group aspect-square rounded-xl overflow-hidden border border-zinc-100 bg-zinc-50">
+                  <div key={`new-${idx}`} className="relative group aspect-square rounded-xl overflow-hidden border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
                     <img src={URL.createObjectURL(file)} alt="Preview" className="w-full h-full object-cover" />
-                    <button type="button" onClick={() => removeNewImage(idx)} className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-rose-50 text-rose-500">
+                    <button type="button" onClick={() => removeNewImage(idx)} className="absolute top-2 right-2 p-1.5 bg-card/90 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-rose-50 text-rose-500">
                       <X className="w-3.5 h-3.5" />
                     </button>
                     {existingImages.length === 0 && idx === 0 && (
@@ -305,7 +315,7 @@ export function ProductForm({ initialData, onSuccess, onCancel, isSubmitting }: 
 
           <Card className="p-6 rounded-[1.5rem] border-none shadow-[0_4px_24px_rgb(0,0,0,0.02)] space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-zinc-900">Variantes</h3>
+              <h3 className="text-lg font-semibold text-foreground">Variantes</h3>
               <Button type="button" variant="outline" size="sm" onClick={() => appendVariant({ name: '', stock: 0, sku: '', price: undefined })} className="rounded-lg">
                 <Plus className="w-4 h-4 mr-2" />
                 Añadir Variante
@@ -313,33 +323,33 @@ export function ProductForm({ initialData, onSuccess, onCancel, isSubmitting }: 
             </div>
             
             {variantFields.length === 0 ? (
-              <div className="text-center py-8 bg-zinc-50 rounded-xl border border-zinc-100">
-                <p className="text-sm text-zinc-500">Este producto no tiene variantes.</p>
+              <div className="text-center py-8 bg-zinc-50 dark:bg-zinc-900/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                <p className="text-sm text-muted-foreground">Este producto no tiene variantes.</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {variantFields.map((field, index) => (
-                  <div key={field.id} className="flex items-start gap-4 p-4 bg-zinc-50 rounded-xl border border-zinc-100 relative group">
+                  <div key={field.id} className="flex items-start gap-4 p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-xl border border-zinc-100 dark:border-zinc-800 relative group">
                     <input type="hidden" {...register(`variants.${index}.id`)} />
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 flex-1">
                       <div className="space-y-1">
                         <label className="text-xs font-medium text-zinc-700">Nombre (Ej: XL Rojo)</label>
-                        <Input {...register(`variants.${index}.name`)} className="bg-white text-sm h-9" />
+                        <Input {...register(`variants.${index}.name`)} className="bg-card text-sm h-9" />
                       </div>
                       <div className="space-y-1">
                         <label className="text-xs font-medium text-zinc-700">SKU (Opcional)</label>
-                        <Input {...register(`variants.${index}.sku`)} className="bg-white text-sm h-9" />
+                        <Input {...register(`variants.${index}.sku`)} className="bg-card text-sm h-9" />
                       </div>
                       <div className="space-y-1">
                         <label className="text-xs font-medium text-zinc-700">Precio (Opcional)</label>
-                        <Input type="number" step="0.01" {...register(`variants.${index}.price`)} className="bg-white text-sm h-9" />
+                        <Input type="number" step="0.01" {...register(`variants.${index}.price`)} className="bg-card text-sm h-9" />
                       </div>
                       <div className="space-y-1">
                         <label className="text-xs font-medium text-zinc-700">Stock</label>
-                        <Input type="number" {...register(`variants.${index}.stock`)} className="bg-white text-sm h-9" />
+                        <Input type="number" {...register(`variants.${index}.stock`)} className="bg-card text-sm h-9" />
                       </div>
                     </div>
-                    <Button type="button" variant="ghost" size="icon" onClick={() => removeVariant(index)} className="mt-5 text-zinc-400 hover:text-rose-500 hover:bg-rose-50">
+                    <Button type="button" variant="ghost" size="icon" onClick={() => removeVariant(index)} className="mt-5 text-muted-foreground hover:text-rose-500 hover:bg-rose-50">
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
@@ -352,41 +362,41 @@ export function ProductForm({ initialData, onSuccess, onCancel, isSubmitting }: 
         {/* Sidebar Column */}
         <div className="space-y-6">
           <Card className="p-6 rounded-[1.5rem] border-none shadow-[0_4px_24px_rgb(0,0,0,0.02)] space-y-6">
-            <h3 className="text-lg font-semibold text-zinc-900">Precios e Inventario</h3>
+            <h3 className="text-lg font-semibold text-foreground">Precios e Inventario</h3>
             
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-900">Precio Regular *</label>
+                <label className="text-sm font-medium text-foreground">Precio Regular *</label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">S/</span>
-                  <Input type="number" step="0.01" {...register('price')} className="pl-7 bg-zinc-50 border-zinc-200 rounded-xl" placeholder="0.00" />
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">S/</span>
+                  <Input type="number" step="0.01" {...register('price')} className="pl-7 bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl" placeholder="0.00" />
                 </div>
                 {errors.price && <p className="text-rose-500 text-xs">{errors.price.message}</p>}
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-900">Precio de Comparación</label>
+                <label className="text-sm font-medium text-foreground">Precio de Comparación</label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">S/</span>
-                  <Input type="number" step="0.01" {...register('compare_at_price')} className="pl-7 bg-zinc-50 border-zinc-200 rounded-xl" placeholder="0.00" />
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">S/</span>
+                  <Input type="number" step="0.01" {...register('compare_at_price')} className="pl-7 bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl" placeholder="0.00" />
                 </div>
-                <p className="text-xs text-zinc-500">Se mostrará tachado para indicar un descuento.</p>
+                <p className="text-xs text-muted-foreground">Se mostrará tachado para indicar un descuento.</p>
               </div>
 
               <div className="space-y-2 pt-2">
-                <label className="text-sm font-medium text-zinc-900">SKU Global</label>
-                <Input {...register('sku')} className="bg-zinc-50 border-zinc-200 rounded-xl" placeholder="PROD-001" />
+                <label className="text-sm font-medium text-foreground">SKU Global</label>
+                <Input {...register('sku')} className="bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 rounded-xl" placeholder="PROD-001" />
               </div>
             </div>
           </Card>
 
           <Card className="p-6 rounded-[1.5rem] border-none shadow-[0_4px_24px_rgb(0,0,0,0.02)] space-y-6">
-            <h3 className="text-lg font-semibold text-zinc-900">Clasificación</h3>
+            <h3 className="text-lg font-semibold text-foreground">Clasificación</h3>
             
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-900">Estado</label>
-                <select {...register('status')} className="w-full p-2.5 text-sm bg-zinc-50 border border-zinc-200 rounded-xl outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+                <label className="text-sm font-medium text-foreground">Estado</label>
+                <select {...register('status')} className="w-full p-2.5 text-sm bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
                   <option value="draft">Borrador</option>
                   <option value="published">Publicado</option>
                   <option value="archived">Archivado</option>
@@ -394,8 +404,8 @@ export function ProductForm({ initialData, onSuccess, onCancel, isSubmitting }: 
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-900">Categoría Principal *</label>
-                <select {...register('category_id')} className="w-full p-2.5 text-sm bg-zinc-50 border border-zinc-200 rounded-xl outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+                <label className="text-sm font-medium text-foreground">Categoría Principal *</label>
+                <select {...register('category_id')} className="w-full p-2.5 text-sm bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
                   <option value="">Selecciona una categoría</option>
                   {categories?.map(c => (
                     <option key={c.id} value={c.id}>{c.name}</option>
@@ -405,9 +415,9 @@ export function ProductForm({ initialData, onSuccess, onCancel, isSubmitting }: 
               </div>
 
               <div className="space-y-3 pt-2">
-                <label className="text-sm font-medium text-zinc-900">Colecciones</label>
+                <label className="text-sm font-medium text-foreground">Colecciones</label>
                 <div className="space-y-2 max-h-[150px] overflow-y-auto pr-2">
-                  {collections?.length === 0 && <p className="text-xs text-zinc-500">No hay colecciones creadas.</p>}
+                  {collections?.length === 0 && <p className="text-xs text-muted-foreground">No hay colecciones creadas.</p>}
                   {collections?.map(c => (
                     <div key={c.id} className="flex items-center space-x-2">
                       <input 
@@ -423,10 +433,10 @@ export function ProductForm({ initialData, onSuccess, onCancel, isSubmitting }: 
                 </div>
               </div>
 
-              <div className="space-y-2 pt-4 border-t border-zinc-100">
+              <div className="space-y-2 pt-4 border-t border-zinc-100 dark:border-zinc-800">
                 <div className="flex items-center space-x-2">
                   <input type="checkbox" id="featured" {...register('featured')} className="rounded border-zinc-300 text-primary focus:ring-primary h-4 w-4" />
-                  <label htmlFor="featured" className="text-sm font-medium text-zinc-900">
+                  <label htmlFor="featured" className="text-sm font-medium text-foreground">
                     Producto Destacado
                   </label>
                 </div>

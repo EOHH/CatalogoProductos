@@ -12,6 +12,8 @@ import { CartDrawer } from './CartDrawer'
 import { useStoreRoute } from '../hooks/useStoreRoute'
 import { useStoreRealtime } from '../hooks/useStoreRealtime'
 import { ScrollToTop } from '@/components/layout/ScrollToTop'
+import { ThemeProvider } from '@/providers/ThemeProvider'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { useEffect } from 'react'
 
 export function StoreLayout() {
@@ -49,7 +51,24 @@ export function StoreLayout() {
       syncWishlist(validIds)
       syncCart(validIds)
     }
-  }, [allProducts])
+  }, [allProducts, syncWishlist, syncCart])
+
+  useEffect(() => {
+    if (settings?.store_name || tenant?.name) {
+      document.title = settings?.store_name || tenant?.name || 'Tienda'
+    }
+
+    const faviconUrl = tenant?.favicon_url || tenant?.logo_url
+    if (faviconUrl) {
+      let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement
+      if (!link) {
+        link = document.createElement('link')
+        link.rel = 'icon'
+        document.head.appendChild(link)
+      }
+      link.href = faviconUrl
+    }
+  }, [tenant, settings])
 
   const isActive = (path: string) => location.pathname === buildUrl(path)
 
@@ -61,11 +80,12 @@ export function StoreLayout() {
   }
   
   return (
-    <div 
-      className="min-h-screen flex flex-col font-sans bg-[#fcf9f9] selection:bg-store-primary/20 selection:text-store-primary"
-      style={{ '--store-primary-color': tenant?.primary_color || '#000000' } as React.CSSProperties}
-    >
-      <ScrollToTop />
+    <ThemeProvider defaultTheme="light" storageKey="store-ui-theme">
+      <div 
+        className="min-h-screen flex flex-col font-sans bg-background selection:bg-store-primary/20 selection:text-store-primary"
+        style={{ '--store-primary-color': tenant?.primary_color || '#000000' } as React.CSSProperties}
+      >
+        <ScrollToTop />
       {/* 1. TOP BANNER (Orange) */}
       <div className="bg-store-primary text-white text-[10px] sm:text-xs font-bold uppercase tracking-widest py-2 px-4 relative z-[60]">
         <div className="max-w-[1400px] mx-auto flex flex-col sm:flex-row justify-between items-center gap-1 sm:gap-4">
@@ -82,24 +102,24 @@ export function StoreLayout() {
       </div>
 
       {/* 2. HEADER (Sticky) */}
-      <header className="sticky top-0 z-50 bg-white shadow-sm transition-all border-b border-zinc-100">
+      <header className="sticky top-0 z-50 bg-card shadow-sm transition-all border-b border-zinc-100 dark:border-zinc-800">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20 md:h-24">
             
             {/* Mobile Menu Button */}
-            <div className="flex items-center lg:hidden w-1/4">
-              <button onClick={() => setIsMobileMenuOpen(true)} className="text-zinc-900 p-2 -ml-2">
+            <div className="flex items-center lg:hidden flex-1">
+              <button onClick={() => setIsMobileMenuOpen(true)} className="text-foreground p-2 -ml-2">
                 <Menu className="w-6 h-6" strokeWidth={1.5} />
               </button>
             </div>
 
             {/* Logo */}
-            <div className="flex-shrink-0 flex items-center justify-center lg:justify-start w-2/4 lg:w-48">
+            <div className="flex-shrink-0 flex items-center justify-center lg:justify-start flex-1 lg:w-48">
               <Link to={buildUrl("/")} className="flex items-center gap-2">
                 {tenant?.logo_url ? (
                   <img src={tenant.logo_url} alt={settings?.store_name || tenant.name} className="h-12 md:h-14 w-auto object-contain" />
                 ) : (
-                  <span className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-zinc-900 text-center lg:text-left">
+                  <span className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-foreground text-center lg:text-left">
                     {settings?.store_name || tenant?.name}
                   </span>
                 )}
@@ -110,7 +130,7 @@ export function StoreLayout() {
             <nav className="hidden lg:flex items-center justify-center space-x-12 flex-1 px-8">
               <Link 
                 to={buildUrl("/catalog")} 
-                className={`text-[11px] font-bold uppercase tracking-[0.15em] transition-colors py-2 relative group ${isActive('/catalog') ? 'text-store-primary' : 'text-zinc-600 hover:text-store-primary'}`}
+                className={`text-[11px] font-bold uppercase tracking-[0.15em] transition-colors py-2 relative group ${isActive('/catalog') ? 'text-store-primary' : 'text-muted-foreground hover:text-store-primary'}`}
               >
                 Catálogo
                 <span className={`absolute bottom-0 left-0 w-full h-[2px] bg-store-primary transition-transform origin-left ${isActive('/catalog') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
@@ -119,7 +139,7 @@ export function StoreLayout() {
                 <Link 
                   key={cat.id} 
                   to={buildUrl(`/category/${cat.slug}`)} 
-                  className={`text-[11px] font-bold uppercase tracking-[0.15em] transition-colors py-2 relative group ${isActive(`/category/${cat.slug}`) ? 'text-store-primary' : 'text-zinc-600 hover:text-store-primary'}`}
+                  className={`text-[11px] font-bold uppercase tracking-[0.15em] transition-colors py-2 relative group ${isActive(`/category/${cat.slug}`) ? 'text-store-primary' : 'text-muted-foreground hover:text-store-primary'}`}
                 >
                   {cat.name}
                   <span className={`absolute bottom-0 left-0 w-full h-[2px] bg-store-primary transition-transform origin-left ${isActive(`/category/${cat.slug}`) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
@@ -127,7 +147,7 @@ export function StoreLayout() {
               ))}
               <a 
                 href="#footer" 
-                className="text-[11px] font-bold uppercase tracking-[0.15em] transition-colors py-2 relative group text-zinc-600 hover:text-store-primary"
+                className="text-[11px] font-bold uppercase tracking-[0.15em] transition-colors py-2 relative group text-muted-foreground hover:text-store-primary"
                 onClick={(e) => {
                   e.preventDefault();
                   window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
@@ -139,61 +159,66 @@ export function StoreLayout() {
             </nav>
 
             {/* Right Side: Search (Desktop) + Icons */}
-            <div className="flex items-center justify-end space-x-4 w-1/4 lg:w-auto">
+            <div className="flex items-center justify-end gap-2 sm:gap-4 flex-1 lg:w-auto">
               
               {/* Desktop Search Input */}
               <form onSubmit={handleSearch} className="hidden lg:flex relative items-center mr-4 w-64 group">
-                <Search className="absolute left-4 w-4 h-4 text-zinc-400 group-focus-within:text-store-primary transition-colors" />
+                <Search className="absolute left-4 w-4 h-4 text-muted-foreground group-focus-within:text-store-primary transition-colors" />
                 <input 
                   type="text"
                   placeholder="Buscar productos..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-zinc-50 border border-zinc-200 rounded-full text-[13px] text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-store-primary focus:border-store-primary transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-full text-[13px] text-foreground placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-store-primary focus:border-store-primary transition-all"
                 />
               </form>
 
               {/* Wishlist */}
-              <Link to={buildUrl("/wishlist")} className="p-2 text-zinc-600 hover:text-store-primary transition-colors flex flex-col items-center group relative">
+              <Link to={buildUrl("/wishlist")} className="p-2 text-muted-foreground hover:text-store-primary transition-colors flex flex-col items-center group relative">
                 <div className="relative">
                   <Heart className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.2} />
                   {wishlist.length > 0 && (
-                    <span className="absolute -top-1 -right-1.5 bg-store-primary text-white text-[10px] font-bold w-[18px] h-[18px] rounded-full flex items-center justify-center border border-white shadow-sm">
+                    <span className="absolute -top-1 -right-1.5 bg-store-primary text-white text-[10px] font-bold w-[18px] h-[18px] rounded-full flex items-center justify-center border border-card dark:border-zinc-900 shadow-sm">
                       {wishlist.length}
                     </span>
                   )}
                 </div>
-                <span className="hidden lg:block text-[9px] font-medium uppercase tracking-widest mt-1.5 text-zinc-500 group-hover:text-store-primary">Favoritos</span>
+                <span className="hidden lg:block text-[9px] font-medium uppercase tracking-widest mt-1.5 text-muted-foreground group-hover:text-store-primary">Favoritos</span>
               </Link>
 
               {/* Cart */}
               <button 
                 onClick={() => setIsCartOpen(true)}
-                className="p-2 text-zinc-600 hover:text-store-primary transition-colors flex flex-col items-center group relative"
+                className="p-2 text-muted-foreground hover:text-store-primary transition-colors flex flex-col items-center group relative"
               >
                 <div className="relative">
                   <ShoppingCart className="w-6 h-6 md:w-7 md:h-7" strokeWidth={1.2} />
                   {totalItems > 0 && (
-                    <span className="absolute -top-1 -right-1.5 bg-zinc-900 text-white text-[10px] font-bold w-[18px] h-[18px] rounded-full flex items-center justify-center border border-white shadow-sm">
+                    <span className="absolute -top-1 -right-1.5 bg-foreground text-background text-[10px] font-bold w-[18px] h-[18px] rounded-full flex items-center justify-center border border-card dark:border-zinc-900 shadow-sm">
                       {totalItems}
                     </span>
                   )}
                 </div>
-                <span className="hidden lg:block text-[9px] font-medium uppercase tracking-widest mt-1.5 text-zinc-500 group-hover:text-store-primary">Carrito</span>
+                <span className="hidden lg:block text-[9px] font-medium uppercase tracking-widest mt-1.5 text-muted-foreground group-hover:text-store-primary">Carrito</span>
               </button>
+
+              {/* Theme Toggle */}
+              <div className="flex flex-col items-center justify-center">
+                <ThemeToggle showLabel={false} />
+              </div>
             </div>
           </div>
           
           {/* Mobile Search Bar (Below Header) */}
           <div className="lg:hidden pb-4">
             <form onSubmit={handleSearch} className="relative items-center w-full group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 group-focus-within:text-store-primary transition-colors" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-store-primary transition-colors" />
               <input 
                 type="text"
                 placeholder="Buscar productos..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-store-primary focus:border-store-primary transition-all"
+                className="w-full pl-10 pr-4 py-3 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm text-foreground placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-store-primary focus:border-store-primary transition-all"
               />
             </form>
           </div>
@@ -201,27 +226,27 @@ export function StoreLayout() {
       </header>
 
       {/* 3. FEATURES BAR (Global) */}
-      <div className="hidden lg:flex justify-center items-center py-5 bg-white border-b border-zinc-100 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] relative z-30">
+      <div className="hidden lg:flex justify-center items-center py-5 bg-card border-b border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] relative z-30">
         <div className="max-w-[1200px] w-full px-8 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <Tag className="w-5 h-5 text-store-primary/80" strokeWidth={1.5} />
-            <span className="text-[11px] font-medium text-zinc-700 tracking-wide uppercase">Productos exclusivos</span>
+            <span className="text-[11px] font-medium text-foreground tracking-wide uppercase">Productos exclusivos</span>
           </div>
           <div className="flex items-center gap-3">
             <Award className="w-5 h-5 text-store-primary/80" strokeWidth={1.5} />
-            <span className="text-[11px] font-medium text-zinc-700 tracking-wide uppercase">Calidad premium</span>
+            <span className="text-[11px] font-medium text-foreground tracking-wide uppercase">Calidad premium</span>
           </div>
           <div className="flex items-center gap-3">
             <ShieldCheck className="w-5 h-5 text-store-primary/80" strokeWidth={1.5} />
-            <span className="text-[11px] font-medium text-zinc-700 tracking-wide uppercase">Compra 100% segura</span>
+            <span className="text-[11px] font-medium text-foreground tracking-wide uppercase">Compra 100% segura</span>
           </div>
           <div className="flex items-center gap-3">
             <Headset className="w-5 h-5 text-store-primary/80" strokeWidth={1.5} />
-            <span className="text-[11px] font-medium text-zinc-700 tracking-wide uppercase">Atención personalizada</span>
+            <span className="text-[11px] font-medium text-foreground tracking-wide uppercase">Atención personalizada</span>
           </div>
         </div>
         {/* Pequeño detalle inferior decorativo (como en el mockup) */}
-        <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-5 bg-white border-b border-r border-zinc-100 rotate-45 shadow-[2px_2px_4px_-2px_rgba(0,0,0,0.05)]"></div>
+        <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-5 bg-card border-b border-r border-zinc-100 dark:border-zinc-800 rotate-45 shadow-[2px_2px_4px_-2px_rgba(0,0,0,0.05)]"></div>
       </div>
 
       {/* 4. MOBILE MENU DRAWER */}
@@ -237,21 +262,21 @@ export function StoreLayout() {
           <div className="relative w-full max-w-[320px] bg-store-primary h-full shadow-2xl flex flex-col transform transition-transform duration-300">
             
             {/* Drawer Header */}
-            <div className="flex justify-between items-center h-20 px-4 border-b border-white/10 bg-white">
-              <button onClick={() => setIsMobileMenuOpen(false)} className="text-zinc-500 p-2 -ml-2 hover:text-store-primary">
+            <div className="flex justify-between items-center h-20 px-4 border-b border-card dark:border-zinc-900/10 bg-card">
+              <button onClick={() => setIsMobileMenuOpen(false)} className="text-muted-foreground p-2 -ml-2 hover:text-store-primary">
                 <X className="w-7 h-7" strokeWidth={1.5} />
               </button>
               <div className="flex-1 flex justify-center">
                 {tenant?.logo_url ? (
                   <img src={tenant.logo_url} alt={settings?.store_name} className="h-10 w-auto object-contain" />
                 ) : (
-                  <span className="font-serif text-xl font-bold tracking-tight text-zinc-900">
+                  <span className="font-serif text-xl font-bold tracking-tight text-foreground">
                     {settings?.store_name || tenant?.name}
                   </span>
                 )}
               </div>
               <div className="flex items-center gap-3">
-                <Link to={buildUrl("/wishlist")} onClick={() => setIsMobileMenuOpen(false)} className="relative text-zinc-600">
+                <Link to={buildUrl("/wishlist")} onClick={() => setIsMobileMenuOpen(false)} className="relative text-muted-foreground">
                   <Heart className="w-6 h-6" strokeWidth={1.2} />
                   {wishlist.length > 0 && (
                     <span className="absolute -top-1 -right-1 bg-store-primary text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
@@ -259,7 +284,7 @@ export function StoreLayout() {
                     </span>
                   )}
                 </Link>
-                <button onClick={() => {setIsMobileMenuOpen(false); setIsCartOpen(true)}} className="relative text-zinc-600">
+                <button onClick={() => {setIsMobileMenuOpen(false); setIsCartOpen(true)}} className="relative text-muted-foreground">
                   <ShoppingCart className="w-6 h-6" strokeWidth={1.2} />
                   {totalItems > 0 && (
                     <span className="absolute -top-1 -right-1 bg-zinc-900 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
@@ -267,6 +292,9 @@ export function StoreLayout() {
                     </span>
                   )}
                 </button>
+
+                {/* Theme Toggle */}
+                <ThemeToggle />
               </div>
             </div>
 
@@ -313,5 +341,6 @@ export function StoreLayout() {
       {/* Global Search Palette (Fallback/Hidden usually) */}
       <SearchPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </div>
+    </ThemeProvider>
   )
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { ChevronDown, Loader2, ShieldCheck, Truck } from 'lucide-react'
@@ -43,12 +43,28 @@ export function CatalogView({ type = 'all' }: { type?: 'all' | 'category' | 'col
   const [isSortOpen, setIsSortOpen] = useState(false)
   const [visibleCount, setVisibleCount] = useState(12)
 
-  // Process products (Sort & Paginate)
-  const processedProducts = products ? [...products].sort((a, b) => {
-    if (sortBy === 'price_asc') return Number(a.price) - Number(b.price)
-    if (sortBy === 'price_desc') return Number(b.price) - Number(a.price)
-    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime() // newest
-  }) : []
+  // Tags extraction and filtering
+  const [selectedTag, setSelectedTag] = useState<string | null>(null)
+
+  // Reset tag when category changes
+  useEffect(() => {
+    setSelectedTag(null)
+  }, [categorySlug, collectionSlug, searchQuery])
+
+  const availableTags = Array.from(new Set(
+    (products || [])
+      .flatMap(p => p.tags || [])
+      .filter(Boolean)
+  )).sort()
+
+  // Process products (Filter, Sort & Paginate)
+  const processedProducts = products ? [...products]
+    .filter(p => selectedTag ? p.tags?.includes(selectedTag) : true)
+    .sort((a, b) => {
+      if (sortBy === 'price_asc') return Number(a.price) - Number(b.price)
+      if (sortBy === 'price_desc') return Number(b.price) - Number(a.price)
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime() // newest
+    }) : []
   const visibleProducts = processedProducts.slice(0, visibleCount)
 
   let pageTitle = 'Catálogo Completo'
@@ -72,16 +88,16 @@ export function CatalogView({ type = 'all' }: { type?: 'all' | 'category' | 'col
   }
 
   return (
-    <div className="w-full fade-in font-sans bg-[#fcf9f9] pb-10">
+    <div className="w-full fade-in font-sans bg-background pb-10">
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
 
         {/* PAGE TITLE */}
         <div className="mb-10 lg:mb-12">
-          <h1 className="text-3xl md:text-4xl font-serif text-zinc-900 tracking-tight mb-2">
+          <h1 className="text-3xl md:text-4xl font-serif text-foreground tracking-tight mb-2">
             {pageTitle}
           </h1>
-          <p className="text-zinc-500 text-sm">
+          <p className="text-muted-foreground text-sm">
             {pageSubtitle}
           </p>
         </div>
@@ -92,12 +108,12 @@ export function CatalogView({ type = 'all' }: { type?: 'all' | 'category' | 'col
           <aside className="hidden lg:block w-64 flex-shrink-0">
             {/* Categorías */}
             <div className="mb-8">
-              <h4 className="text-[11px] font-bold text-zinc-900 uppercase tracking-widest mb-4 px-2">Categorías</h4>
+              <h4 className="text-[11px] font-bold text-foreground uppercase tracking-widest mb-4 px-2">Categorías</h4>
               <ul className="space-y-1">
                 <li>
                   <Link
                     to={buildUrl("/catalog")}
-                    className={`block px-3 py-2.5 rounded-xl text-sm transition-all ${type === 'all' ? 'bg-store-primary/10 text-store-primary font-bold' : 'text-zinc-600 hover:text-store-primary hover:bg-zinc-50'}`}
+                    className={`block px-3 py-2.5 rounded-xl text-sm transition-all ${type === 'all' ? 'bg-store-primary/10 text-store-primary font-bold' : 'text-muted-foreground hover:text-store-primary hover:bg-zinc-50 dark:bg-zinc-900/50'}`}
                   >
                     Todo el catálogo
                   </Link>
@@ -106,7 +122,7 @@ export function CatalogView({ type = 'all' }: { type?: 'all' | 'category' | 'col
                   <li key={cat.id}>
                     <Link
                       to={buildUrl(`/category/${cat.slug}`)}
-                      className={`block px-3 py-2.5 rounded-xl text-sm transition-all ${categorySlug === cat.slug ? 'bg-store-primary/10 text-store-primary font-bold' : 'text-zinc-600 hover:text-store-primary hover:bg-zinc-50'}`}
+                      className={`block px-3 py-2.5 rounded-xl text-sm transition-all ${categorySlug === cat.slug ? 'bg-store-primary/10 text-store-primary font-bold' : 'text-muted-foreground hover:text-store-primary hover:bg-zinc-50 dark:bg-zinc-900/50'}`}
                     >
                       {cat.name}
                     </Link>
@@ -118,13 +134,13 @@ export function CatalogView({ type = 'all' }: { type?: 'all' | 'category' | 'col
             {/* Colecciones */}
             {collections && collections.length > 0 && (
               <div className="mb-8">
-                <h4 className="text-[11px] font-bold text-zinc-900 uppercase tracking-widest mb-4 px-2">Colecciones</h4>
+                <h4 className="text-[11px] font-bold text-foreground uppercase tracking-widest mb-4 px-2">Colecciones</h4>
                 <ul className="space-y-1">
                   {collections.map(col => (
                     <li key={col.id}>
                       <Link
                         to={buildUrl(`/collection/${col.slug}`)}
-                        className={`block px-3 py-2.5 rounded-xl text-sm transition-all ${collectionSlug === col.slug ? 'bg-store-primary/10 text-store-primary font-bold' : 'text-zinc-600 hover:text-store-primary hover:bg-zinc-50'}`}
+                        className={`block px-3 py-2.5 rounded-xl text-sm transition-all ${collectionSlug === col.slug ? 'bg-store-primary/10 text-store-primary font-bold' : 'text-muted-foreground hover:text-store-primary hover:bg-zinc-50 dark:bg-zinc-900/50'}`}
                       >
                         {col.name}
                       </Link>
@@ -139,24 +155,24 @@ export function CatalogView({ type = 'all' }: { type?: 'all' | 'category' | 'col
           <main className="flex-1">
 
             {/* Mobile Sort & Desktop Toolbar */}
-            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 lg:mb-8 relative z-50 gap-4">
-              <div className="hidden lg:block text-sm text-zinc-500 font-medium">
+            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 lg:mb-8 relative z-40 gap-4">
+              <div className="hidden lg:block text-sm text-muted-foreground font-medium">
                 Mostrando {visibleProducts.length} de {processedProducts.length} productos
               </div>
               
               <div className="relative self-end lg:self-auto">
                 <button 
                   onClick={() => setIsSortOpen(!isSortOpen)}
-                  className="flex items-center gap-2 text-xs lg:text-sm font-bold text-zinc-900 border border-zinc-200 bg-white hover:bg-zinc-50 px-4 py-2 rounded-full transition-colors shadow-sm"
+                  className="flex items-center gap-2 text-xs lg:text-sm font-bold text-foreground border border-zinc-200 dark:border-zinc-800 bg-card hover:bg-zinc-50 dark:bg-zinc-900/50 px-4 py-2 rounded-full transition-colors shadow-sm"
                 >
                   {sortBy === 'newest' ? 'MÁS RECIENTES' : sortBy === 'price_asc' ? 'MENOR PRECIO' : 'MAYOR PRECIO'}
                   <ChevronDown className={`w-4 h-4 transition-transform ${isSortOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {isSortOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-zinc-100 shadow-xl rounded-xl overflow-hidden py-2 z-50">
-                    <button onClick={() => { setSortBy('newest'); setIsSortOpen(false); }} className={`w-full text-left px-4 py-2 text-sm ${sortBy === 'newest' ? 'text-store-primary font-bold bg-store-primary/5' : 'text-zinc-600 hover:bg-zinc-50'}`}>Más Recientes</button>
-                    <button onClick={() => { setSortBy('price_asc'); setIsSortOpen(false); }} className={`w-full text-left px-4 py-2 text-sm ${sortBy === 'price_asc' ? 'text-store-primary font-bold bg-store-primary/5' : 'text-zinc-600 hover:bg-zinc-50'}`}>Precio: Menor a Mayor</button>
-                    <button onClick={() => { setSortBy('price_desc'); setIsSortOpen(false); }} className={`w-full text-left px-4 py-2 text-sm ${sortBy === 'price_desc' ? 'text-store-primary font-bold bg-store-primary/5' : 'text-zinc-600 hover:bg-zinc-50'}`}>Precio: Mayor a Menor</button>
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-zinc-100 dark:border-zinc-800 shadow-xl rounded-xl overflow-hidden py-2 z-40">
+                    <button onClick={() => { setSortBy('newest'); setIsSortOpen(false); }} className={`w-full text-left px-4 py-2 text-sm ${sortBy === 'newest' ? 'text-store-primary font-bold bg-store-primary/5' : 'text-muted-foreground hover:bg-zinc-50 dark:bg-zinc-900/50'}`}>Más Recientes</button>
+                    <button onClick={() => { setSortBy('price_asc'); setIsSortOpen(false); }} className={`w-full text-left px-4 py-2 text-sm ${sortBy === 'price_asc' ? 'text-store-primary font-bold bg-store-primary/5' : 'text-muted-foreground hover:bg-zinc-50 dark:bg-zinc-900/50'}`}>Precio: Menor a Mayor</button>
+                    <button onClick={() => { setSortBy('price_desc'); setIsSortOpen(false); }} className={`w-full text-left px-4 py-2 text-sm ${sortBy === 'price_desc' ? 'text-store-primary font-bold bg-store-primary/5' : 'text-muted-foreground hover:bg-zinc-50 dark:bg-zinc-900/50'}`}>Precio: Mayor a Menor</button>
                   </div>
                 )}
               </div>
@@ -166,7 +182,7 @@ export function CatalogView({ type = 'all' }: { type?: 'all' | 'category' | 'col
             <div className="lg:hidden mb-6 overflow-x-auto hide-scrollbar -mx-4 px-4 flex gap-2">
               <Link
                 to={buildUrl("/catalog")}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest transition-colors ${type === 'all' ? 'bg-store-primary text-white' : 'bg-white text-zinc-600 border border-zinc-200'}`}
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest transition-colors ${type === 'all' ? 'bg-store-primary text-white' : 'bg-card text-muted-foreground border border-zinc-200 dark:border-zinc-800'}`}
               >
                 Todo
               </Link>
@@ -174,7 +190,7 @@ export function CatalogView({ type = 'all' }: { type?: 'all' | 'category' | 'col
                 <Link
                   key={cat.id}
                   to={buildUrl(`/category/${cat.slug}`)}
-                  className={`flex-shrink-0 px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest transition-colors ${categorySlug === cat.slug ? 'bg-store-primary text-white' : 'bg-white text-zinc-600 border border-zinc-200'}`}
+                  className={`flex-shrink-0 px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest transition-colors ${categorySlug === cat.slug ? 'bg-store-primary text-white' : 'bg-card text-muted-foreground border border-zinc-200 dark:border-zinc-800'}`}
                 >
                   {cat.name}
                 </Link>
@@ -183,19 +199,49 @@ export function CatalogView({ type = 'all' }: { type?: 'all' | 'category' | 'col
                 <Link
                   key={col.id}
                   to={buildUrl(`/collection/${col.slug}`)}
-                  className={`flex-shrink-0 px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest transition-colors ${collectionSlug === col.slug ? 'bg-store-primary text-white' : 'bg-white text-zinc-600 border border-zinc-200'}`}
+                  className={`flex-shrink-0 px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-widest transition-colors ${collectionSlug === col.slug ? 'bg-store-primary text-white' : 'bg-card text-muted-foreground border border-zinc-200 dark:border-zinc-800'}`}
                 >
                   {col.name}
                 </Link>
               ))}
             </div>
 
+            {/* TAGS FILTERS */}
+            {availableTags.length > 0 && (
+              <div className="mb-8 flex flex-wrap gap-2 items-center">
+                <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mr-2">Filtros:</span>
+                <button
+                  onClick={() => setSelectedTag(null)}
+                  className={`px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all ${
+                    !selectedTag 
+                      ? 'bg-zinc-900 text-white shadow-md' 
+                      : 'bg-card text-muted-foreground border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:border-zinc-700'
+                  }`}
+                >
+                  Todos
+                </button>
+                {availableTags.map(tag => (
+                  <button
+                    key={tag}
+                    onClick={() => setSelectedTag(tag)}
+                    className={`px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all ${
+                      selectedTag === tag 
+                        ? 'bg-store-primary text-white shadow-md' 
+                        : 'bg-card text-muted-foreground border border-zinc-200 dark:border-zinc-800 hover:border-store-primary hover:text-store-primary'
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {/* Grid */}
             {isLoading ? (
               <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-store-primary" /></div>
             ) : visibleProducts.length > 0 ? (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6 mb-12">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-6 mb-12">
                   {visibleProducts.map(product => (
                     <CatalogProductCard key={product.id} product={product} />
                   ))}
@@ -203,7 +249,7 @@ export function CatalogView({ type = 'all' }: { type?: 'all' | 'category' | 'col
 
                 {/* Cargar Más */}
                 {visibleCount < processedProducts.length && (
-                  <div className="flex justify-center border-t border-zinc-200 pt-12">
+                  <div className="flex justify-center border-t border-zinc-200 dark:border-zinc-800 pt-12">
                     <button 
                       onClick={() => setVisibleCount(v => v + 12)}
                       className="flex items-center justify-center gap-2 bg-zinc-900 hover:bg-store-primary text-white text-[11px] font-bold uppercase tracking-widest px-10 py-4 rounded-xl transition-all shadow-sm hover:shadow-md"
@@ -214,8 +260,8 @@ export function CatalogView({ type = 'all' }: { type?: 'all' | 'category' | 'col
                 )}
               </>
             ) : (
-              <div className="bg-white rounded-2xl p-12 text-center border border-zinc-100">
-                <p className="text-zinc-500 mb-4">No se encontraron productos en esta sección.</p>
+              <div className="bg-card rounded-2xl p-12 text-center border border-zinc-100 dark:border-zinc-800">
+                <p className="text-muted-foreground mb-4">No se encontraron productos en esta sección.</p>
                 {type !== 'all' && (
                   <Link to={buildUrl("/catalog")} className="text-sm font-bold text-store-primary underline hover:opacity-80 transition-opacity">Volver al catálogo completo</Link>
                 )}
@@ -223,26 +269,26 @@ export function CatalogView({ type = 'all' }: { type?: 'all' | 'category' | 'col
             )}
 
             {/* Features Bar */}
-            <div className="mt-12 pt-8 border-t border-zinc-200 grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="mt-12 pt-8 border-t border-zinc-200 dark:border-zinc-800 grid grid-cols-2 md:grid-cols-4 gap-8">
               <div className="text-center flex flex-col items-center">
                 <Truck className="w-8 h-8 text-store-primary/80 mb-3" strokeWidth={1.5} />
-                <h5 className="text-xs font-bold text-zinc-900 mb-2">Envíos a todo el Perú</h5>
-                <p className="text-[11px] text-zinc-500">Recibe tu pedido rápido y seguro.</p>
+                <h5 className="text-xs font-bold text-foreground mb-2">Envíos a todo el Perú</h5>
+                <p className="text-[11px] text-muted-foreground">Recibe tu pedido rápido y seguro.</p>
               </div>
               <div className="text-center flex flex-col items-center">
                 <ShieldCheck className="w-8 h-8 text-store-primary/80 mb-3" strokeWidth={1.5} />
-                <h5 className="text-xs font-bold text-zinc-900 mb-2">Productos 100% Originales</h5>
-                <p className="text-[11px] text-zinc-500">Garantizamos autenticidad en cada compra.</p>
+                <h5 className="text-xs font-bold text-foreground mb-2">Productos 100% Originales</h5>
+                <p className="text-[11px] text-muted-foreground">Garantizamos autenticidad en cada compra.</p>
               </div>
               <div className="text-center flex flex-col items-center">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-store-primary/80 mb-3"><path d="M21 2v6h-6M21 8l-4-4a9 9 0 0 0-14 3M3 22v-6h6M3 16l4 4a9 9 0 0 0 14-3"/></svg>
-                <h5 className="text-xs font-bold text-zinc-900 mb-2">Cambios y Devoluciones</h5>
-                <p className="text-[11px] text-zinc-500">Fácil y sin complicaciones dentro de 7 días.</p>
+                <h5 className="text-xs font-bold text-foreground mb-2">Cambios y Devoluciones</h5>
+                <p className="text-[11px] text-muted-foreground">Fácil y sin complicaciones dentro de 7 días.</p>
               </div>
               <div className="text-center flex flex-col items-center">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-store-primary/80 mb-3"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <h5 className="text-xs font-bold text-zinc-900 mb-2">Atención Personalizada</h5>
-                <p className="text-[11px] text-zinc-500">Estamos para ayudarte en lo que necesites.</p>
+                <h5 className="text-xs font-bold text-foreground mb-2">Atención Personalizada</h5>
+                <p className="text-[11px] text-muted-foreground">Estamos para ayudarte en lo que necesites.</p>
               </div>
             </div>
 

@@ -55,21 +55,21 @@ export function SearchPalette({ isOpen, onClose }: SearchPaletteProps) {
       {/* Background click area to close */}
       <div className="absolute inset-0" onClick={onClose} />
 
-      <div className="relative w-full max-w-2xl bg-white shadow-2xl rounded-lg overflow-hidden flex flex-col">
+      <div className="relative w-full max-w-2xl bg-card shadow-2xl rounded-lg overflow-hidden flex flex-col">
         {/* Search Input */}
-        <div className="flex items-center px-4 border-b border-zinc-100">
-          <Search className="w-5 h-5 text-zinc-400" />
+        <div className="flex items-center px-4 border-b border-zinc-100 dark:border-zinc-800">
+          <Search className="w-5 h-5 text-muted-foreground" />
           <input
             ref={inputRef}
             type="text"
-            className="flex-1 w-full bg-transparent border-0 outline-none px-4 py-5 text-zinc-900 placeholder-zinc-400 font-medium text-lg"
+            className="flex-1 w-full bg-transparent border-0 outline-none px-4 py-5 text-foreground placeholder-zinc-400 font-medium text-lg"
             placeholder="Buscar vestidos, faldas, colecciones..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <button
             onClick={onClose}
-            className="p-2 text-zinc-400 hover:text-zinc-900 transition-colors"
+            className="p-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -84,14 +84,14 @@ export function SearchPalette({ isOpen, onClose }: SearchPaletteProps) {
           )}
 
           {!isLoading && debouncedSearchTerm.length > 1 && results?.length === 0 && (
-            <div className="py-12 text-center text-zinc-500">
+            <div className="py-12 text-center text-muted-foreground">
               No encontramos resultados para "{searchTerm}"
             </div>
           )}
 
           {!isLoading && results && results.length > 0 && (
             <div className="p-2">
-              <h3 className="px-4 py-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+              <h3 className="px-4 py-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                 Productos
               </h3>
               <div className="flex flex-col">
@@ -102,9 +102,9 @@ export function SearchPalette({ isOpen, onClose }: SearchPaletteProps) {
                     <button
                       key={product.id}
                       onClick={() => handleProductClick(product.slug)}
-                      className="flex items-center gap-4 px-4 py-3 hover:bg-zinc-50 transition-colors text-left group"
+                      className="flex items-center gap-4 px-4 py-3 hover:bg-zinc-50 dark:bg-zinc-900/50 transition-colors text-left group"
                     >
-                      <div className="w-12 h-16 bg-zinc-100 overflow-hidden shrink-0">
+                      <div className="w-12 h-16 bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0">
                         {image ? (
                           <img src={image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                         ) : (
@@ -112,13 +112,13 @@ export function SearchPalette({ isOpen, onClose }: SearchPaletteProps) {
                         )}
                       </div>
                       <div className="flex-1">
-                        <h4 className="text-sm font-medium text-zinc-900">{product.name}</h4>
+                        <h4 className="text-sm font-medium text-foreground">{product.name}</h4>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs font-bold text-zinc-900">
+                          <span className="text-xs font-bold text-foreground">
                             S/ {Number(product.price).toFixed(2)}
                           </span>
                           {product.compare_at_price && product.compare_at_price > product.price && (
-                            <span className="text-[10px] text-zinc-400 line-through">
+                            <span className="text-[10px] text-muted-foreground line-through">
                               S/ {Number(product.compare_at_price).toFixed(2)}
                             </span>
                           )}
@@ -128,13 +128,13 @@ export function SearchPalette({ isOpen, onClose }: SearchPaletteProps) {
                   )
                 })}
               </div>
-              <div className="border-t border-zinc-100 mt-2 p-2">
+              <div className="border-t border-zinc-100 dark:border-zinc-800 mt-2 p-2">
                 <button
                   onClick={() => {
                     onClose()
                     navigate(buildUrl(`/catalog`))
                   }}
-                  className="w-full py-3 text-xs font-medium text-zinc-500 hover:text-zinc-900 transition-colors text-center"
+                  className="w-full py-3 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors text-center"
                 >
                   Ver todo el catálogo
                 </button>
@@ -143,7 +143,7 @@ export function SearchPalette({ isOpen, onClose }: SearchPaletteProps) {
           )}
 
           {!searchTerm && (
-            <div className="p-8 text-center text-zinc-400 text-sm">
+            <div className="p-8 text-center text-muted-foreground text-sm">
               Escribe el nombre de un producto para comenzar a buscar
             </div>
           )}

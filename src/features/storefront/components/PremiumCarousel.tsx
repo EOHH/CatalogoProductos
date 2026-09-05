@@ -83,7 +83,7 @@ export function PremiumCarousel() {
         <div className="flex items-center justify-between mb-8 lg:mb-10">
           <div className="flex items-center gap-3">
             <div className="w-4 h-[2px] bg-store-primary"></div>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif text-zinc-900 tracking-tight">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif text-foreground tracking-tight">
               Destacados Exclusivos
             </h2>
           </div>
@@ -101,14 +101,14 @@ export function PremiumCarousel() {
           {/* Navigation Controls (Floating Over edges) */}
           <button 
             onClick={() => scroll('left')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 w-12 h-12 rounded-full bg-white shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-zinc-100 flex items-center justify-center text-zinc-600 hover:text-store-primary hover:scale-105 transition-all hidden md:flex opacity-0 group-hover:opacity-100"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 w-12 h-12 rounded-full bg-card shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-zinc-100 dark:border-zinc-800 flex items-center justify-center text-muted-foreground hover:text-store-primary hover:scale-105 transition-all hidden md:flex opacity-0 group-hover:opacity-100"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
           
           <button 
             onClick={() => scroll('right')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 w-12 h-12 rounded-full bg-white shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-zinc-100 flex items-center justify-center text-zinc-600 hover:text-store-primary hover:scale-105 transition-all hidden md:flex opacity-0 group-hover:opacity-100"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 w-12 h-12 rounded-full bg-card shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-zinc-100 dark:border-zinc-800 flex items-center justify-center text-muted-foreground hover:text-store-primary hover:scale-105 transition-all hidden md:flex opacity-0 group-hover:opacity-100"
           >
             <ChevronRight className="w-6 h-6" />
           </button>

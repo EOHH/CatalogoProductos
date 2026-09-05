@@ -5,14 +5,18 @@ import { Header } from './Header'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
 import { Home, Package, ShoppingCart, Users, MoreHorizontal } from 'lucide-react'
 import { ScrollToTop } from '@/components/layout/ScrollToTop'
+import { DynamicHead } from '@/components/layout/DynamicHead'
+import { ThemeProvider } from '@/providers/ThemeProvider'
 
 export function AppShell() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const location = useLocation()
 
   return (
-    <div className="h-screen bg-background flex text-foreground font-sans overflow-hidden">
-      <ScrollToTop />
+    <ThemeProvider defaultTheme="light" storageKey="dashboard-ui-theme">
+      <div className="h-screen bg-background flex text-foreground font-sans overflow-hidden">
+        <ScrollToTop />
+      <DynamicHead />
       {/* Desktop Sidebar */}
       <Sidebar />
 
@@ -28,7 +32,7 @@ export function AppShell() {
         <Header onMenuClick={() => setIsMobileMenuOpen(true)} />
         
         {/* Usamos pb-24 en móvil para evitar que el bottom nav tape el contenido */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 pb-24 md:pb-8">
+        <main id="main-scroll-container" className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 pb-24 md:pb-8">
           <div className="mx-auto max-w-[1200px] w-full">
             <Outlet />
           </div>
@@ -42,8 +46,9 @@ export function AppShell() {
           <NavItem icon={<Users className="h-5 w-5" />} label="Clientes" active={location.pathname.includes('/customers')} />
           <NavItem icon={<MoreHorizontal className="h-5 w-5" />} label="Más" active={false} onClick={() => setIsMobileMenuOpen(true)} />
         </div>
+        </div>
       </div>
-    </div>
+    </ThemeProvider>
   )
 }
 

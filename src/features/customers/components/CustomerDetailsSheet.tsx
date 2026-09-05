@@ -66,11 +66,11 @@ export function CustomerDetailsSheet({ customer, isOpen, onClose }: Props) {
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent className="w-full sm:max-w-md md:max-w-lg overflow-y-auto bg-white p-0">
-        <div className="p-6 border-b border-zinc-100 sticky top-0 bg-white/80 backdrop-blur-xl z-10 flex items-center justify-between">
-          <SheetTitle className="text-xl font-bold text-zinc-900">Detalles del Cliente</SheetTitle>
-          <button onClick={onClose} className="p-2 hover:bg-zinc-100 rounded-full transition-colors">
-            <X className="w-5 h-5 text-zinc-500" />
+      <SheetContent className="w-full sm:max-w-md md:max-w-lg overflow-y-auto bg-card p-0">
+        <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 sticky top-0 bg-card/80 backdrop-blur-xl z-10 flex items-center justify-between">
+          <SheetTitle className="text-xl font-bold text-foreground">Detalles del Cliente</SheetTitle>
+          <button onClick={onClose} className="p-2 hover:bg-zinc-100 dark:bg-zinc-800 rounded-full transition-colors">
+            <X className="w-5 h-5 text-muted-foreground" />
           </button>
         </div>
 
@@ -82,10 +82,10 @@ export function CustomerDetailsSheet({ customer, isOpen, onClose }: Props) {
                 {customer.first_name[0].toUpperCase()}
               </div>
               <div>
-                <h3 className="text-xl font-bold text-zinc-900">
+                <h3 className="text-xl font-bold text-foreground">
                   {customer.first_name} {customer.last_name}
                 </h3>
-                <p className="text-sm text-zinc-500 mt-1 flex items-center gap-2">
+                <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
                   <Calendar className="w-3.5 h-3.5" /> Registrado el {new Date(customer.created_at).toLocaleDateString()}
                 </p>
               </div>
@@ -93,7 +93,7 @@ export function CustomerDetailsSheet({ customer, isOpen, onClose }: Props) {
             {!isEditing && (
               <button 
                 onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-lg transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-muted-foreground bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 rounded-lg transition-colors"
               >
                 <Edit2 className="w-4 h-4" /> Editar
               </button>
@@ -102,33 +102,33 @@ export function CustomerDetailsSheet({ customer, isOpen, onClose }: Props) {
 
           {/* Edit Form or View */}
           {isEditing ? (
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-zinc-50 p-5 rounded-2xl border border-zinc-200/60">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-zinc-50 dark:bg-zinc-900/50 p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800/60">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-[13px] font-semibold text-zinc-700">Nombre</label>
-                  <input {...register('first_name')} className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-sm focus:outline-none focus:border-zinc-400" />
+                  <label className="text-[13px] font-semibold text-foreground">Nombre</label>
+                  <input {...register('first_name')} className="w-full px-3 py-2 bg-card border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm focus:outline-none focus:border-zinc-400" />
                   {errors.first_name && <p className="text-xs text-rose-500">{errors.first_name.message}</p>}
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[13px] font-semibold text-zinc-700">Apellido</label>
-                  <input {...register('last_name')} className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-sm focus:outline-none focus:border-zinc-400" />
+                  <label className="text-[13px] font-semibold text-foreground">Apellido</label>
+                  <input {...register('last_name')} className="w-full px-3 py-2 bg-card border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm focus:outline-none focus:border-zinc-400" />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <label className="text-[13px] font-semibold text-zinc-700">Email</label>
-                <input {...register('email')} type="email" className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-sm focus:outline-none focus:border-zinc-400" />
+                <label className="text-[13px] font-semibold text-foreground">Email</label>
+                <input {...register('email')} type="email" className="w-full px-3 py-2 bg-card border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm focus:outline-none focus:border-zinc-400" />
                 {errors.email && <p className="text-xs text-rose-500">{errors.email.message}</p>}
               </div>
               <div className="space-y-1.5">
-                <label className="text-[13px] font-semibold text-zinc-700">Teléfono</label>
-                <input {...register('phone')} className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-sm focus:outline-none focus:border-zinc-400" />
+                <label className="text-[13px] font-semibold text-foreground">Teléfono</label>
+                <input {...register('phone')} className="w-full px-3 py-2 bg-card border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm focus:outline-none focus:border-zinc-400" />
               </div>
               
               <div className="flex items-center gap-3 pt-4">
                 <button 
                   type="button" 
                   onClick={() => setIsEditing(false)}
-                  className="flex-1 px-4 py-2 text-sm font-medium text-zinc-600 bg-white border border-zinc-200 rounded-xl hover:bg-zinc-50 transition-colors"
+                  className="flex-1 px-4 py-2 text-sm font-medium text-muted-foreground bg-card border border-zinc-200 dark:border-zinc-800 rounded-xl hover:bg-zinc-50 dark:bg-zinc-900/50 transition-colors"
                 >
                   Cancelar
                 </button>
@@ -143,22 +143,22 @@ export function CustomerDetailsSheet({ customer, isOpen, onClose }: Props) {
             </form>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-zinc-50 p-4 rounded-2xl border border-zinc-100 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center shrink-0">
-                  <Mail className="w-4 h-4 text-zinc-500" />
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-card border border-zinc-200 dark:border-zinc-800 flex items-center justify-center shrink-0">
+                  <Mail className="w-4 h-4 text-muted-foreground" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Email</p>
-                  <p className="text-sm font-medium text-zinc-900 truncate">{customer.email || 'No registrado'}</p>
+                  <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Email</p>
+                  <p className="text-sm font-medium text-foreground truncate">{customer.email || 'No registrado'}</p>
                 </div>
               </div>
-              <div className="bg-zinc-50 p-4 rounded-2xl border border-zinc-100 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center shrink-0">
-                  <Phone className="w-4 h-4 text-zinc-500" />
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-card border border-zinc-200 dark:border-zinc-800 flex items-center justify-center shrink-0">
+                  <Phone className="w-4 h-4 text-muted-foreground" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Teléfono</p>
-                  <p className="text-sm font-medium text-zinc-900 truncate">{customer.phone || 'No registrado'}</p>
+                  <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Teléfono</p>
+                  <p className="text-sm font-medium text-foreground truncate">{customer.phone || 'No registrado'}</p>
                 </div>
               </div>
             </div>
@@ -166,23 +166,23 @@ export function CustomerDetailsSheet({ customer, isOpen, onClose }: Props) {
 
           {/* Stats */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-5 rounded-2xl border border-zinc-200 bg-white shadow-sm flex flex-col justify-center items-center text-center">
+            <div className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-card shadow-sm flex flex-col justify-center items-center text-center">
               <ShoppingBag className="w-6 h-6 text-emerald-600 mb-2" />
-              <p className="text-2xl font-bold text-zinc-900">{customer.orders_count}</p>
-              <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">Pedidos Totales</p>
+              <p className="text-2xl font-bold text-foreground">{customer.orders_count}</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mt-1">Pedidos Totales</p>
             </div>
-            <div className="p-5 rounded-2xl border border-zinc-200 bg-white shadow-sm flex flex-col justify-center items-center text-center">
+            <div className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-card shadow-sm flex flex-col justify-center items-center text-center">
               <span className="text-xl font-serif text-purple-600 mb-2 font-bold">S/</span>
-              <p className="text-2xl font-bold text-zinc-900">{Number(customer.total_spent).toFixed(2)}</p>
-              <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider mt-1">Total Gastado</p>
+              <p className="text-2xl font-bold text-foreground">{Number(customer.total_spent).toFixed(2)}</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mt-1">Total Gastado</p>
             </div>
           </div>
 
           {/* Order History */}
           <div>
-            <h4 className="text-[15px] font-bold text-zinc-900 mb-4 flex items-center gap-2">
+            <h4 className="text-[15px] font-bold text-foreground mb-4 flex items-center gap-2">
               Historial de Pedidos 
-              <span className="bg-zinc-100 text-zinc-600 text-xs py-0.5 px-2 rounded-full font-medium">
+              <span className="bg-zinc-100 dark:bg-zinc-800 text-muted-foreground text-xs py-0.5 px-2 rounded-full font-medium">
                 {orders.length}
               </span>
             </h4>
@@ -192,17 +192,17 @@ export function CustomerDetailsSheet({ customer, isOpen, onClose }: Props) {
                 <Loader2 className="w-6 h-6 text-zinc-300 animate-spin" />
               </div>
             ) : orders.length === 0 ? (
-              <div className="text-center py-8 bg-zinc-50 rounded-2xl border border-zinc-100 border-dashed">
-                <p className="text-sm text-zinc-500">Este cliente aún no tiene pedidos asociados.</p>
+              <div className="text-center py-8 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 border-dashed">
+                <p className="text-sm text-muted-foreground">Este cliente aún no tiene pedidos asociados.</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {orders.map(order => (
-                  <div key={order.id} className="p-4 rounded-2xl border border-zinc-200 bg-white hover:border-zinc-300 transition-colors">
+                  <div key={order.id} className="p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-card hover:border-zinc-300 dark:border-zinc-700 transition-colors">
                     <div className="flex justify-between items-start mb-3">
                       <div>
-                        <p className="text-sm font-bold text-zinc-900">Pedido #{order.id.slice(0,6)}</p>
-                        <p className="text-xs text-zinc-500 mt-0.5">{new Date(order.created_at).toLocaleString()}</p>
+                        <p className="text-sm font-bold text-foreground">Pedido #{order.id.slice(0,6)}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{new Date(order.created_at).toLocaleString()}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-bold text-emerald-600">S/ {Number(order.total_amount).toFixed(2)}</p>
@@ -215,22 +215,22 @@ export function CustomerDetailsSheet({ customer, isOpen, onClose }: Props) {
                       </div>
                     </div>
                     {order.order_items && order.order_items.length > 0 && (
-                      <div className="pt-3 border-t border-zinc-100 space-y-2">
+                      <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 space-y-2">
                         {order.order_items.map((item: any) => (
                           <div key={item.id} className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-zinc-100 overflow-hidden shrink-0">
+                            <div className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0">
                               {item.products?.product_images?.[0]?.public_url ? (
                                 <img src={item.products.product_images[0].public_url} alt="" className="w-full h-full object-cover" />
                               ) : (
-                                <Package className="w-4 h-4 text-zinc-400 m-2" />
+                                <Package className="w-4 h-4 text-muted-foreground m-2" />
                               )}
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="text-xs font-medium text-zinc-900 truncate">
+                              <p className="text-xs font-medium text-foreground truncate">
                                 {item.quantity}x {item.products?.name || 'Producto eliminado'}
                               </p>
                             </div>
-                            <p className="text-xs font-semibold text-zinc-500 shrink-0">
+                            <p className="text-xs font-semibold text-muted-foreground shrink-0">
                               S/ {Number(item.total_price).toFixed(2)}
                             </p>
                           </div>

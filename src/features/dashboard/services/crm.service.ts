@@ -10,12 +10,25 @@ export const crmService = {
   async getCustomers(tenantId: string): Promise<Customer[]> {
     const { data, error } = await supabase
       .from('customers')
-      .select('*')
+      .select('*, orders(total_amount, status)')
       .eq('tenant_id', tenantId)
-      .order('total_spent', { ascending: false })
+      .order('created_at', { ascending: false })
 
     if (error) throw error
-    return data as Customer[]
+    
+    // Dynamically calculate total spent and orders count from actual orders
+    return (data as any[]).map(c => {
+      const paidStatuses = ['paid', 'in_production', 'packaging', 'shipped', 'delivered']
+      const paidOrders = c.orders?.filter((o: any) => paidStatuses.includes(o.status)) || []
+      const totalSpent = paidOrders.reduce((sum: number, o: any) => sum + Number(o.total_amount || 0), 0)
+      
+      return {
+        ...c,
+        orders: undefined, // remove joined data to match Customer interface
+        total_spent: totalSpent,
+        orders_count: c.orders?.length || 0
+      }
+    }).sort((a, b) => b.total_spent - a.total_spent) as Customer[]
   },
 
   async createCustomer(customer: Database['public']['Tables']['customers']['Insert']): Promise<Customer> {

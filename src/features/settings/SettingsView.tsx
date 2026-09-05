@@ -1,13 +1,30 @@
-import { useState } from 'react'
-import { Layout, Palette, Globe } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { Layout, Palette, Globe, User } from 'lucide-react'
 import { GeneralSettings } from './components/GeneralSettings'
 import { AppearanceSettings } from './components/AppearanceSettings'
 import { SEOSettings } from './components/SEOSettings'
+import { ProfileSettings } from './components/ProfileSettings'
 
-type Tab = 'general' | 'appearance' | 'seo'
+type Tab = 'profile' | 'general' | 'appearance' | 'seo'
 
 export function SettingsView() {
-  const [activeTab, setActiveTab] = useState<Tab>('appearance')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const initialTab = (searchParams.get('tab') as Tab) || 'appearance'
+  const [activeTab, setActiveTab] = useState<Tab>(initialTab)
+
+  // Sincronizar el estado interno si cambia la URL externamente
+  useEffect(() => {
+    const tabFromUrl = searchParams.get('tab') as Tab
+    if (tabFromUrl && tabFromUrl !== activeTab) {
+      setActiveTab(tabFromUrl)
+    }
+  }, [searchParams])
+
+  const handleTabChange = (tab: Tab) => {
+    setActiveTab(tab)
+    setSearchParams({ tab })
+  }
 
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto">
@@ -22,11 +39,23 @@ export function SettingsView() {
         {/* Sidebar Nav */}
         <nav className="w-full md:w-64 flex flex-row md:flex-col gap-1 overflow-x-auto pb-2 md:pb-0 shrink-0">
           <button
-            onClick={() => setActiveTab('appearance')}
+            onClick={() => handleTabChange('profile')}
+            className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-md whitespace-nowrap transition-colors ${
+              activeTab === 'profile' 
+                ? 'bg-primary/10 text-primary' 
+                : 'text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground'
+            }`}
+          >
+            <User className="h-4 w-4 mr-3 shrink-0" />
+            Perfil
+          </button>
+          
+          <button
+            onClick={() => handleTabChange('appearance')}
             className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-md whitespace-nowrap transition-colors ${
               activeTab === 'appearance' 
                 ? 'bg-primary/10 text-primary' 
-                : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900'
+                : 'text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground'
             }`}
           >
             <Palette className="h-4 w-4 mr-3 shrink-0" />
@@ -34,11 +63,11 @@ export function SettingsView() {
           </button>
           
           <button
-            onClick={() => setActiveTab('general')}
+            onClick={() => handleTabChange('general')}
             className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-md whitespace-nowrap transition-colors ${
               activeTab === 'general' 
                 ? 'bg-primary/10 text-primary' 
-                : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900'
+                : 'text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground'
             }`}
           >
             <Layout className="h-4 w-4 mr-3 shrink-0" />
@@ -46,11 +75,11 @@ export function SettingsView() {
           </button>
           
           <button
-            onClick={() => setActiveTab('seo')}
+            onClick={() => handleTabChange('seo')}
             className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-md whitespace-nowrap transition-colors ${
               activeTab === 'seo' 
                 ? 'bg-primary/10 text-primary' 
-                : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900'
+                : 'text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground'
             }`}
           >
             <Globe className="h-4 w-4 mr-3 shrink-0" />
@@ -60,7 +89,8 @@ export function SettingsView() {
 
         {/* Main Content */}
         <div className="flex-1 min-w-0">
-          <div className="bg-white rounded-xl shadow-sm border border-zinc-200 p-6 md:p-8">
+          <div className="bg-card rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-6 md:p-8">
+            {activeTab === 'profile' && <ProfileSettings />}
             {activeTab === 'appearance' && <AppearanceSettings />}
             {activeTab === 'general' && <GeneralSettings />}
             {activeTab === 'seo' && <SEOSettings />}

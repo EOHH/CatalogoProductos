@@ -32,7 +32,7 @@ export function DashboardHome() {
       case 'productos': return <Package className="w-5 h-5 text-rose-500" />
       case 'pedidos': return <ShoppingCart className="w-5 h-5 text-orange-500" />
       case 'clientes': return <Users className="w-5 h-5 text-emerald-600" />
-      default: return <Package className="w-5 h-5 text-zinc-500" />
+      default: return <Package className="w-5 h-5 text-muted-foreground" />
     }
   }
 
@@ -42,7 +42,7 @@ export function DashboardHome() {
       case 'product': return <Package className="w-3.5 h-3.5 text-purple-600" />
       case 'customer': return <UserPlus className="w-3.5 h-3.5 text-orange-500" />
       case 'coupon': return <Ticket className="w-3.5 h-3.5 text-emerald-600" />
-      default: return <Package className="w-3.5 h-3.5 text-zinc-500" />
+      default: return <Package className="w-3.5 h-3.5 text-muted-foreground" />
     }
   }
 
@@ -50,22 +50,22 @@ export function DashboardHome() {
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-700 font-sans">
       
       {/* 1. HERO SECTION */}
-      <div className="relative w-full rounded-[2rem] bg-[#fcf2f4] overflow-hidden flex flex-col md:flex-row shadow-[0_8px_30px_rgb(0,0,0,0.02)] min-h-[280px]">
+      <div className="relative w-full rounded-[2rem] bg-[#fcf2f4] dark:bg-zinc-900/50 overflow-hidden flex flex-col md:flex-row shadow-[0_8px_30px_rgb(0,0,0,0.02)] min-h-[280px] border dark:border-zinc-800">
         {/* Lado izquierdo (Texto) */}
         <div className="p-8 md:p-12 flex-1 relative z-10 flex flex-col justify-center">
-          <div className="absolute top-6 right-8 md:hidden bg-white/80 backdrop-blur px-3 py-1.5 rounded-full flex items-center text-[11px] font-medium text-zinc-600 shadow-sm">
-            <Calendar className="w-3 h-3 mr-2 text-zinc-400" />
+          <div className="absolute top-6 right-8 md:hidden bg-card/80 dark:bg-black/50 backdrop-blur px-3 py-1.5 rounded-full flex items-center text-[11px] font-medium text-muted-foreground dark:text-zinc-300 shadow-sm border dark:border-zinc-800">
+            <Calendar className="w-3 h-3 mr-2 text-muted-foreground" />
             8 - 15 Mayo, 2025
           </div>
           
-          <p className="text-[13px] font-medium text-zinc-500 mb-3 flex items-center">
+          <p className="text-[13px] font-medium text-muted-foreground dark:text-muted-foreground mb-3 flex items-center">
             ¡Bienvenida de nuevo, María! <span className="ml-1 text-base">👋</span>
           </p>
-          <h1 className="text-3xl md:text-4xl font-serif text-zinc-900 leading-tight mb-4 tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-serif text-foreground dark:text-zinc-100 leading-tight mb-4 tracking-tight">
             Todo en orden, <br />
             tu catálogo brilla ✨
           </h1>
-          <p className="text-[14px] text-zinc-600 max-w-[280px] leading-relaxed mb-8">
+          <p className="text-[14px] text-muted-foreground dark:text-muted-foreground max-w-[280px] leading-relaxed mb-8">
             Administra tu tienda, productos y pedidos desde un solo lugar.
           </p>
           <div>
@@ -76,11 +76,11 @@ export function DashboardHome() {
         </div>
         
         {/* Lado derecho (Imagen y DatePicker en Desktop) */}
-        <div className="hidden md:block w-1/2 relative bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/dashboard-hero.png')" }}>
-          <div className="absolute top-8 right-8 bg-white/90 backdrop-blur px-4 py-2 rounded-xl flex items-center text-[12px] font-medium text-zinc-600 shadow-sm border border-white">
-            8 - 15 Mayo, 2025 <Calendar className="w-4 h-4 ml-3 text-zinc-400" />
+        <div className="hidden md:block w-1/2 relative bg-cover bg-center bg-no-repeat opacity-90 dark:opacity-50" style={{ backgroundImage: "url('/images/dashboard-hero.png')" }}>
+          <div className="absolute top-8 right-8 bg-card/90 dark:bg-black/50 backdrop-blur px-4 py-2 rounded-xl flex items-center text-[12px] font-medium text-muted-foreground dark:text-zinc-300 shadow-sm border border-white dark:border-zinc-900 dark:border-zinc-800">
+            8 - 15 Mayo, 2025 <Calendar className="w-4 h-4 ml-3 text-muted-foreground" />
           </div>
-          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#fcf2f4] to-transparent"></div>
+          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#fcf2f4] dark:from-zinc-900/50 to-transparent"></div>
         </div>
       </div>
 
@@ -102,23 +102,22 @@ export function DashboardHome() {
       {/* 3. MIDDLE SECTION (Grid 3 cols on Desktop) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* CHART (Ventas) */}
         <Card className="rounded-[1.5rem] border-none shadow-[0_4px_24px_rgb(0,0,0,0.02)] p-6 flex flex-col h-[400px]">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="font-semibold text-[15px] text-zinc-900">Ventas</h3>
-            <button className="flex items-center text-[11px] font-medium text-zinc-600 bg-zinc-50 px-3 py-1.5 rounded-lg border border-zinc-100">
+            <h3 className="font-semibold text-[15px] text-foreground dark:text-zinc-100">Ventas</h3>
+            <button className="flex items-center text-[11px] font-medium text-muted-foreground dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900/50 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-100 dark:border-zinc-800 dark:border-zinc-700">
               Esta semana <ChevronDown className="ml-2 w-3 h-3" />
             </button>
           </div>
           <div className="flex items-end gap-3 mb-6">
-            <span className="text-2xl font-bold text-zinc-900 tracking-tight">{stats.salesChart.total}</span>
-            <span className="flex items-center text-[11px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded mb-1">
+            <span className="text-2xl font-bold text-foreground dark:text-white tracking-tight">{stats.salesChart.total}</span>
+            <span className="flex items-center text-[11px] font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded mb-1">
               <ArrowUpRight className="w-3 h-3 mr-0.5" /> {stats.salesChart.trend}
             </span>
           </div>
           {/* Fake Chart SVG replaced with dynamic polyline */}
           <div className="flex-1 w-full relative mt-auto">
-            <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-[10px] text-zinc-400 font-medium">
+            <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-[10px] text-muted-foreground font-medium">
               <span>Máx</span><span></span><span></span><span></span><span></span><span></span><span>S/ 0</span>
             </div>
             <div className="absolute left-8 right-0 top-2 bottom-6">
@@ -155,7 +154,7 @@ export function DashboardHome() {
                 })()}
               </svg>
             </div>
-            <div className="absolute left-8 right-0 bottom-0 flex justify-between text-[10px] text-zinc-400 font-medium">
+            <div className="absolute left-8 right-0 bottom-0 flex justify-between text-[10px] text-muted-foreground font-medium">
               {(stats.salesChart.data || []).map((d, i) => (
                 <span key={i}>{d.label}</span>
               ))}
@@ -166,13 +165,13 @@ export function DashboardHome() {
         {/* PRODUCTOS MAS VENDIDOS */}
         <Card className="rounded-[1.5rem] border-none shadow-[0_4px_24px_rgb(0,0,0,0.02)] p-6 flex flex-col h-[400px]">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="font-semibold text-[15px] text-zinc-900">Productos más vendidos</h3>
+            <h3 className="font-semibold text-[15px] text-foreground">Productos más vendidos</h3>
             <button className="text-[11px] font-medium text-primary hover:underline">Ver todos</button>
           </div>
           <div className="flex-1 flex flex-col space-y-5 overflow-y-auto pr-2 scrollbar-none">
             {stats.topProducts.length === 0 && (
               <div className="flex flex-1 items-center justify-center">
-                <span className="text-[13px] text-zinc-400">Aún no hay ventas</span>
+                <span className="text-[13px] text-muted-foreground">Aún no hay ventas</span>
               </div>
             )}
             {stats.topProducts.map(product => (
@@ -195,14 +194,14 @@ export function DashboardHome() {
         {/* ACTIVIDAD RECIENTE */}
         <Card className="rounded-[1.5rem] border-none shadow-[0_4px_24px_rgb(0,0,0,0.02)] p-6 flex flex-col h-[400px]">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="font-semibold text-[15px] text-zinc-900">Actividad reciente</h3>
+            <h3 className="font-semibold text-[15px] text-foreground">Actividad reciente</h3>
             <button className="text-[11px] font-medium text-primary hover:underline">Ver toda</button>
           </div>
           <div className="flex-1 flex flex-col space-y-6 overflow-y-auto pr-2 scrollbar-none relative">
-            <div className="absolute left-4 top-2 bottom-2 w-px bg-zinc-100 z-0"></div>
+            <div className="absolute left-4 top-2 bottom-2 w-px bg-zinc-100 dark:bg-zinc-800 z-0"></div>
             {stats.recentActivity.length === 0 && (
-              <div className="flex flex-1 items-center justify-center relative z-10 bg-white">
-                <span className="text-[13px] text-zinc-400">No hay actividad reciente</span>
+              <div className="flex flex-1 items-center justify-center relative z-10 bg-card">
+                <span className="text-[13px] text-muted-foreground">No hay actividad reciente</span>
               </div>
             )}
             {stats.recentActivity.map(activity => (
@@ -237,7 +236,7 @@ export function DashboardHome() {
             Descubre reportes avanzados, automatizaciones y herramientas exclusivas para hacer crecer tu catálogo de moda.
           </p>
           <div>
-            <button className="bg-white/10 hover:bg-white/20 text-white border border-white/20 text-[12px] font-semibold px-5 py-2.5 rounded-lg backdrop-blur-sm transition-all flex items-center">
+            <button className="bg-card/10 hover:bg-card/20 text-white border border-white dark:border-zinc-900/20 text-[12px] font-semibold px-5 py-2.5 rounded-lg backdrop-blur-sm transition-all flex items-center">
               Explorar herramientas <ArrowUpRight className="ml-1.5 w-3.5 h-3.5" />
             </button>
           </div>
@@ -257,10 +256,10 @@ function StatCard({ title, value, trend, icon, iconBg, trendColor }: { title: st
         </div>
       </div>
       <div>
-        <p className="text-[12px] font-medium text-zinc-500 mb-1">{title}</p>
-        <h4 className="text-xl md:text-2xl font-bold text-zinc-900 tracking-tight">{value}</h4>
+        <p className="text-[12px] font-medium text-muted-foreground mb-1">{title}</p>
+        <h4 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">{value}</h4>
         <p className={`text-[10px] md:text-[11px] font-medium mt-1.5 ${trendColor}`}>
-          {trend} <span className="text-zinc-400 font-normal ml-0.5 hidden sm:inline">vs semana anterior</span>
+          {trend} <span className="text-muted-foreground font-normal ml-0.5 hidden sm:inline">vs semana anterior</span>
         </p>
       </div>
     </Card>
@@ -271,14 +270,14 @@ function ProductRow({ img, name, sales, price }: { img: string, name: string, sa
   return (
     <div className="flex items-center justify-between group">
       <div className="flex items-center space-x-3">
-        <img src={img} alt={name} className="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover bg-zinc-100" />
+        <img src={img} alt={name} className="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover bg-zinc-100 dark:bg-zinc-800" />
         <div>
-          <p className="text-[13px] font-medium text-zinc-900 line-clamp-1 group-hover:text-primary transition-colors">{name}</p>
-          <p className="text-[11px] text-zinc-500 mt-0.5">{sales}</p>
+          <p className="text-[13px] font-medium text-foreground line-clamp-1 group-hover:text-primary transition-colors">{name}</p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">{sales}</p>
         </div>
       </div>
       <div className="text-right pl-2">
-        <p className="text-[13px] font-bold text-zinc-900">{price}</p>
+        <p className="text-[13px] font-bold text-foreground">{price}</p>
       </div>
     </div>
   )
@@ -287,12 +286,12 @@ function ProductRow({ img, name, sales, price }: { img: string, name: string, sa
 function ActivityRow({ icon, iconBg, title, time }: { icon: React.ReactNode, iconBg: string, title: string, time: string }) {
   return (
     <div className="flex items-start space-x-4 relative z-10">
-      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border-[3px] border-white ${iconBg}`}>
+      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border-[3px] border-white dark:border-zinc-900 ${iconBg}`}>
         {icon}
       </div>
       <div className="pt-1">
-        <p className="text-[12px] font-medium text-zinc-900 leading-snug pr-2">{title}</p>
-        <p className="text-[10px] text-zinc-400 mt-1">{time}</p>
+        <p className="text-[12px] font-medium text-foreground leading-snug pr-2">{title}</p>
+        <p className="text-[10px] text-muted-foreground mt-1">{time}</p>
       </div>
     </div>
   )

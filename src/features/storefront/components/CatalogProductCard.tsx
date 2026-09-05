@@ -48,7 +48,7 @@ export function CatalogProductCard({ product }: CatalogProductCardProps) {
 
   return (
     <Link to={buildUrl(`/product/${product.slug}`)} className="group block h-full">
-      <div className="relative bg-white overflow-hidden rounded-2xl shadow-sm border border-zinc-100 group-hover:shadow-md transition-shadow flex flex-row md:flex-col h-full">
+      <div className="relative bg-card overflow-hidden rounded-2xl shadow-sm border border-zinc-100 dark:border-zinc-800 group-hover:shadow-md transition-shadow flex flex-col h-full">
         
         {/* Top Badges (Desktop Top Left, Mobile Top Left) */}
         {isOnSale && (
@@ -60,13 +60,13 @@ export function CatalogProductCard({ product }: CatalogProductCardProps) {
         {/* Wishlist Button (Desktop Top Right, Mobile Top Right) */}
         <button 
           onClick={handleWishlistClick}
-          className="absolute top-3 right-3 p-2.5 bg-white/90 backdrop-blur rounded-full shadow-sm hover:bg-white hover:scale-110 transition-all z-20 text-zinc-400 hover:text-store-primary"
+          className="absolute top-3 right-3 p-2.5 bg-card/90 backdrop-blur rounded-full shadow-sm hover:bg-card hover:scale-110 transition-all z-20 text-muted-foreground hover:text-store-primary"
         >
           <Heart className={`w-[18px] h-[18px] ${isWished ? 'fill-store-primary text-store-primary' : 'currentColor'}`} />
         </button>
 
         {/* Image Container */}
-        <div className="relative w-[120px] md:w-full shrink-0 aspect-square flex items-center justify-center p-3 md:p-4 bg-zinc-50/50">
+        <div className="relative w-full shrink-0 aspect-square flex items-center justify-center p-3 md:p-4 bg-zinc-50 dark:bg-zinc-900/50">
           <img 
             src={primaryImage} 
             alt={product.name}
@@ -76,14 +76,14 @@ export function CatalogProductCard({ product }: CatalogProductCardProps) {
         </div>
 
         {/* Text Container & Action Button */}
-        <div className="flex flex-col flex-grow justify-between p-4 bg-white">
+        <div className="flex flex-col flex-grow justify-between p-3 md:p-4 bg-card">
           <div className="text-left mb-4">
-            <h3 className="text-[14px] md:text-[15px] font-bold text-zinc-900 group-hover:text-store-primary transition-colors line-clamp-2 md:line-clamp-1 mb-1.5 md:mb-2">
+            <h3 className="text-[14px] md:text-[15px] font-bold text-foreground group-hover:text-store-primary transition-colors line-clamp-2 md:line-clamp-1 mb-1.5 md:mb-2">
               {product.name}
             </h3>
             <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-2">
               {isOnSale && (
-                <span className="text-[11px] md:text-xs text-zinc-400 line-through">
+                <span className="text-[11px] md:text-xs text-muted-foreground line-through">
                   S/ {Number(product.compare_at_price).toFixed(2)}
                 </span>
               )}
@@ -96,7 +96,7 @@ export function CatalogProductCard({ product }: CatalogProductCardProps) {
           {/* Add to Cart Button */}
           <button
             onClick={handleAddToCart}
-            className="w-full flex items-center justify-center gap-2 bg-zinc-900 hover:bg-store-primary text-white text-[10px] md:text-xs font-bold uppercase tracking-widest py-3 rounded-xl transition-colors shadow-sm"
+            className="w-full flex items-center justify-center gap-2 bg-zinc-900 hover:bg-store-primary text-white text-[9px] md:text-xs font-bold uppercase tracking-widest py-2.5 md:py-3 rounded-xl transition-colors shadow-sm"
           >
             <span className="hidden md:inline">Añadir al Carrito</span>
             <span className="md:hidden">Añadir</span>

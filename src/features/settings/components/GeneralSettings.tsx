@@ -53,13 +53,13 @@ export function GeneralSettings() {
   return (
     <div>
       <h2 className="text-lg font-medium mb-4">Configuración General</h2>
-      <p className="text-sm text-zinc-500 mb-6">Administra los datos principales, contacto y localización de tu tienda.</p>
+      <p className="text-sm text-muted-foreground mb-6">Administra los datos principales, contacto y localización de tu tienda.</p>
       
       <div className="space-y-8 max-w-2xl">
         
         {/* Información Básica */}
         <div className="space-y-4">
-          <h3 className="text-md font-medium text-zinc-900 border-b pb-2">Información Básica</h3>
+          <h3 className="text-md font-medium text-foreground border-b pb-2">Información Básica</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-zinc-700 mb-1">Nombre de la tienda</label>
@@ -67,7 +67,7 @@ export function GeneralSettings() {
                 type="text" 
                 value={storeName}
                 onChange={(e) => setStoreName(e.target.value)}
-                className="w-full px-3 py-2 border border-zinc-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
+                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
                 placeholder="Ej. Mi Tienda" 
               />
             </div>
@@ -77,7 +77,7 @@ export function GeneralSettings() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 border border-zinc-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
+                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
                 placeholder="Frase que identifica a tu marca..." 
               />
             </div>
@@ -86,7 +86,7 @@ export function GeneralSettings() {
 
         {/* Contacto y Ubicación */}
         <div className="space-y-4">
-          <h3 className="text-md font-medium text-zinc-900 border-b pb-2">Contacto y Ubicación</h3>
+          <h3 className="text-md font-medium text-foreground border-b pb-2">Contacto y Ubicación</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-zinc-700 mb-1">Número de WhatsApp</label>
@@ -94,7 +94,7 @@ export function GeneralSettings() {
                 type="text" 
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-3 py-2 border border-zinc-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
+                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
                 placeholder="Ej. +51 987 654 321" 
               />
             </div>
@@ -104,7 +104,7 @@ export function GeneralSettings() {
                 type="email" 
                 value={contactEmail}
                 onChange={(e) => setContactEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-zinc-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
+                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
                 placeholder="Ej. hola@mitienda.com" 
               />
             </div>
@@ -114,7 +114,7 @@ export function GeneralSettings() {
                 type="text" 
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full px-3 py-2 border border-zinc-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
+                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
                 placeholder="Ej. Av. Principal 123 o 'Envíos a todo el país'" 
               />
             </div>
@@ -123,14 +123,14 @@ export function GeneralSettings() {
 
         {/* Regionalización */}
         <div className="space-y-4">
-          <h3 className="text-md font-medium text-zinc-900 border-b pb-2">Regionalización</h3>
+          <h3 className="text-md font-medium text-foreground border-b pb-2">Regionalización</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-zinc-700 mb-1">Moneda Principal</label>
               <select 
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="w-full px-3 py-2 border border-zinc-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
               >
                 <option value="USD">USD ($)</option>
                 <option value="EUR">EUR (€)</option>
@@ -146,7 +146,7 @@ export function GeneralSettings() {
               <select 
                 value={locale}
                 onChange={(e) => setLocale(e.target.value)}
-                className="w-full px-3 py-2 border border-zinc-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
               >
                 <option value="es-PE">Español (Perú)</option>
                 <option value="es-MX">Español (México)</option>
@@ -159,7 +159,7 @@ export function GeneralSettings() {
               <select 
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
-                className="w-full px-3 py-2 border border-zinc-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
               >
                 <option value="America/Lima">America/Lima (PET)</option>
                 <option value="America/Mexico_City">America/Mexico_City (CST)</option>
@@ -174,7 +174,7 @@ export function GeneralSettings() {
 
         {/* Redes Sociales */}
         <div className="space-y-4">
-          <h3 className="text-md font-medium text-zinc-900 border-b pb-2">Redes Sociales</h3>
+          <h3 className="text-md font-medium text-foreground border-b pb-2">Redes Sociales</h3>
           <div className="grid grid-cols-1 gap-4">
             <div>
               <label className="block text-sm font-medium text-zinc-700 mb-1">Instagram URL</label>
@@ -182,7 +182,7 @@ export function GeneralSettings() {
                 type="url" 
                 value={socialInstagram}
                 onChange={(e) => setSocialInstagram(e.target.value)}
-                className="w-full px-3 py-2 border border-zinc-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
+                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
                 placeholder="https://instagram.com/tu_tienda" 
               />
             </div>
@@ -192,7 +192,7 @@ export function GeneralSettings() {
                 type="url" 
                 value={socialFacebook}
                 onChange={(e) => setSocialFacebook(e.target.value)}
-                className="w-full px-3 py-2 border border-zinc-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
+                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
                 placeholder="https://facebook.com/tu_tienda" 
               />
             </div>
@@ -202,7 +202,7 @@ export function GeneralSettings() {
                 type="url" 
                 value={socialTiktok}
                 onChange={(e) => setSocialTiktok(e.target.value)}
-                className="w-full px-3 py-2 border border-zinc-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
+                className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
                 placeholder="https://tiktok.com/@tu_tienda" 
               />
             </div>
@@ -210,7 +210,7 @@ export function GeneralSettings() {
         </div>
       </div>
       
-      <div className="mt-8 pt-6 border-t border-zinc-200 flex items-center gap-4">
+      <div className="mt-8 pt-6 border-t border-zinc-200 dark:border-zinc-800 flex items-center gap-4">
         <button 
           onClick={handleSave}
           disabled={updateSettingsMutation.isPending}

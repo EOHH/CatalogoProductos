@@ -89,17 +89,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <Loader2 className="w-8 h-8 animate-spin text-zinc-900" />
+      <div className="min-h-screen flex items-center justify-center bg-card">
+        <Loader2 className="w-8 h-8 animate-spin text-foreground" />
       </div>
     )
   }
 
   if (error || !data?.tenant) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 p-4">
-        <h1 className="text-2xl font-serif font-bold text-zinc-900 mb-2">Tienda no encontrada</h1>
-        <p className="text-zinc-500">La tienda que intentas visitar no existe o está suspendida.</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-zinc-900/50 p-4">
+        <h1 className="text-2xl font-serif font-bold text-foreground mb-2">Tienda no encontrada</h1>
+        <p className="text-muted-foreground">La tienda que intentas visitar no existe o está suspendida.</p>
       </div>
     )
   }

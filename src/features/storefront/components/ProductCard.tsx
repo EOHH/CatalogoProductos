@@ -48,7 +48,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link to={buildUrl(`/product/${product.slug}`)} className="group block h-full">
-      <div className="relative aspect-[4/5] bg-white overflow-hidden rounded-2xl shadow-sm border border-zinc-100 group-hover:shadow-md transition-shadow flex flex-col justify-between">
+      <div className="relative aspect-[4/5] bg-card overflow-hidden rounded-2xl shadow-sm border border-zinc-100 dark:border-zinc-800 group-hover:shadow-md transition-shadow flex flex-col justify-between">
         
         {/* Top Badges */}
         {isOnSale && (
@@ -61,7 +61,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="absolute top-3 right-3 flex flex-col gap-2 z-20">
           <button 
             onClick={handleWishlistClick}
-            className="p-2.5 bg-white/90 backdrop-blur rounded-full shadow-sm hover:bg-white hover:scale-110 transition-all text-zinc-400 hover:text-store-primary"
+            className="p-2.5 bg-card/90 backdrop-blur rounded-full shadow-sm hover:bg-card hover:scale-110 transition-all text-muted-foreground hover:text-store-primary"
             title="Añadir a favoritos"
           >
             <Heart className={`w-[18px] h-[18px] ${isWished ? 'fill-store-primary text-store-primary' : 'currentColor'}`} />
@@ -69,7 +69,7 @@ export function ProductCard({ product }: ProductCardProps) {
           
           <button 
             onClick={handleAddToCart}
-            className="p-2.5 bg-white/90 backdrop-blur rounded-full shadow-sm hover:bg-store-primary hover:text-white hover:scale-110 transition-all text-zinc-600 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0"
+            className="p-2.5 bg-card/90 backdrop-blur rounded-full shadow-sm hover:bg-store-primary hover:text-white hover:scale-110 transition-all text-muted-foreground opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0"
             title="Añadir al carrito"
           >
             <ShoppingCart className="w-[18px] h-[18px]" />
@@ -88,12 +88,12 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {/* Text Container (Inside Card) */}
         <div className="relative z-10 w-full px-4 pb-4 pt-8 bg-gradient-to-t from-white via-white to-transparent text-left">
-          <h3 className="text-[14px] font-bold text-zinc-900 group-hover:text-store-primary transition-colors line-clamp-1 mb-1.5">
+          <h3 className="text-[14px] font-bold text-foreground group-hover:text-store-primary transition-colors line-clamp-1 mb-1.5">
             {product.name}
           </h3>
           <div className="flex items-center gap-2">
             {isOnSale && (
-              <span className="text-[11px] text-zinc-400 line-through">
+              <span className="text-[11px] text-muted-foreground line-through">
                 S/ {Number(product.compare_at_price).toFixed(2)}
               </span>
             )}

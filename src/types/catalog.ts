@@ -38,6 +38,7 @@ export interface Product {
   status: 'published' | 'draft' | 'archived'
   featured: boolean
   position: number
+  tags?: string[] | null
   created_at: string
   updated_at: string
 }
@@ -119,6 +120,7 @@ export interface PublicProduct {
   compare_at_price: number | null
   featured: boolean
   position: number
+  tags?: string[] | null
   created_at: string
   images: PublicProductImage[]
   variants: PublicProductVariant[]

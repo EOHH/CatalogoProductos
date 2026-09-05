@@ -63,7 +63,7 @@ export function SEOSettings() {
   return (
     <div>
       <h2 className="text-lg font-medium mb-4">SEO, Metadatos y Dominio</h2>
-      <p className="text-sm text-zinc-500 mb-6">Optimiza cómo aparece tu tienda en Google, configúrala para compartir en redes sociales y gestiona las URLs de acceso a tu catálogo.</p>
+      <p className="text-sm text-muted-foreground mb-6">Optimiza cómo aparece tu tienda en Google, configúrala para compartir en redes sociales y gestiona las URLs de acceso a tu catálogo.</p>
       
       <div className="space-y-8 max-w-lg">
         {/* DOMINIO DEL CATÁLOGO */}
@@ -73,24 +73,24 @@ export function SEOSettings() {
           <div>
             <label className="block text-sm font-medium text-zinc-700 mb-1">Subdominio (Slug)</label>
             <div className="flex rounded-md shadow-sm">
-              <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-zinc-300 bg-zinc-50 text-zinc-500 text-sm">
+              <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50 text-muted-foreground text-sm">
                 https://
               </span>
               <input 
                 type="text" 
                 value={slug}
                 onChange={handleSlugChange}
-                className="flex-1 min-w-0 block w-full px-3 py-2 border border-zinc-300 rounded-none focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm" 
+                className="flex-1 min-w-0 block w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-none focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm" 
                 placeholder="mi-tienda" 
               />
-              <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-zinc-300 bg-zinc-50 text-zinc-500 text-sm">
+              <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50 text-muted-foreground text-sm">
                 .catalogo.app
               </span>
             </div>
             {slugError ? (
               <p className="mt-1 text-sm text-red-600">{slugError}</p>
             ) : (
-              <p className="mt-1 text-xs text-zinc-500">
+              <p className="mt-1 text-xs text-muted-foreground">
                 URL actual: <strong>https://{slug}.catalogo.app</strong>
               </p>
             )}
@@ -107,10 +107,10 @@ export function SEOSettings() {
               type="text" 
               value={tenant?.custom_domain || ''}
               disabled
-              className="w-full px-3 py-2 border border-zinc-300 rounded-md shadow-sm bg-zinc-50 text-zinc-500 cursor-not-allowed sm:text-sm" 
+              className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm bg-zinc-50 dark:bg-zinc-900/50 text-muted-foreground cursor-not-allowed sm:text-sm" 
               placeholder="www.mitienda.com"
             />
-            <p className="mt-1 text-xs text-zinc-500">
+            <p className="mt-1 text-xs text-muted-foreground">
               La configuración de DNS para dominios propios estará disponible próximamente.
             </p>
           </div>
@@ -125,7 +125,7 @@ export function SEOSettings() {
             type="text" 
             value={seoTitle}
             onChange={(e) => setSeoTitle(e.target.value)}
-            className="w-full px-3 py-2 border border-zinc-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
+            className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
             placeholder="Ej. Mi Tienda | Los mejores productos" 
           />
         </div>
@@ -135,14 +135,14 @@ export function SEOSettings() {
             rows={3} 
             value={seoDescription}
             onChange={(e) => setSeoDescription(e.target.value)}
-            className="w-full px-3 py-2 border border-zinc-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
+            className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" 
             placeholder="Una breve descripción de lo que vendes..."
           />
         </div>
       </div>
     </div>
       
-      <div className="mt-8 pt-6 border-t border-zinc-200 flex items-center gap-4">
+      <div className="mt-8 pt-6 border-t border-zinc-200 dark:border-zinc-800 flex items-center gap-4">
         <button 
           onClick={handleSave}
           disabled={updateSettingsMutation.isPending}

@@ -79,20 +79,20 @@ export function StoreFooter() {
                 {settings?.store_name || tenant?.name}
               </h2>
             )}
-            <p className="text-[11px] leading-relaxed max-w-[200px] mb-8 text-center text-zinc-400">
+            <p className="text-[11px] leading-relaxed max-w-[200px] mb-8 text-center text-muted-foreground">
               {settings?.description || 'Tu estilo, tu esencia. Piezas únicas que te acompañan en cada momento.'}
             </p>
             <div className="flex gap-4">
-              <a href={formatSocialUrl(settings?.social_instagram, 'instagram')} target={settings?.social_instagram ? "_blank" : undefined} rel="noopener noreferrer" className={`w-10 h-10 rounded-full border ${settings?.social_instagram ? 'border-zinc-700 hover:border-store-primary hover:text-store-primary text-zinc-400' : 'border-zinc-800 text-zinc-600 cursor-not-allowed'} flex items-center justify-center transition-colors`}>
+              <a href={formatSocialUrl(settings?.social_instagram, 'instagram')} target={settings?.social_instagram ? "_blank" : undefined} rel="noopener noreferrer" className={`w-10 h-10 rounded-full border ${settings?.social_instagram ? 'border-zinc-700 hover:border-store-primary hover:text-store-primary text-muted-foreground' : 'border-zinc-800 text-muted-foreground cursor-not-allowed'} flex items-center justify-center transition-colors`}>
                 <InstagramIcon className="w-4 h-4" />
               </a>
-              <a href={formatSocialUrl(settings?.social_facebook, 'facebook')} target={settings?.social_facebook ? "_blank" : undefined} rel="noopener noreferrer" className={`w-10 h-10 rounded-full border ${settings?.social_facebook ? 'border-zinc-700 hover:border-store-primary hover:text-store-primary text-zinc-400' : 'border-zinc-800 text-zinc-600 cursor-not-allowed'} flex items-center justify-center transition-colors`}>
+              <a href={formatSocialUrl(settings?.social_facebook, 'facebook')} target={settings?.social_facebook ? "_blank" : undefined} rel="noopener noreferrer" className={`w-10 h-10 rounded-full border ${settings?.social_facebook ? 'border-zinc-700 hover:border-store-primary hover:text-store-primary text-muted-foreground' : 'border-zinc-800 text-muted-foreground cursor-not-allowed'} flex items-center justify-center transition-colors`}>
                 <FacebookIcon className="w-4 h-4" />
               </a>
-              <a href={formatSocialUrl(settings?.social_tiktok, 'tiktok')} target={settings?.social_tiktok ? "_blank" : undefined} rel="noopener noreferrer" className={`w-10 h-10 rounded-full border ${settings?.social_tiktok ? 'border-zinc-700 hover:border-store-primary hover:text-store-primary text-zinc-400' : 'border-zinc-800 text-zinc-600 cursor-not-allowed'} flex items-center justify-center transition-colors`}>
+              <a href={formatSocialUrl(settings?.social_tiktok, 'tiktok')} target={settings?.social_tiktok ? "_blank" : undefined} rel="noopener noreferrer" className={`w-10 h-10 rounded-full border ${settings?.social_tiktok ? 'border-zinc-700 hover:border-store-primary hover:text-store-primary text-muted-foreground' : 'border-zinc-800 text-muted-foreground cursor-not-allowed'} flex items-center justify-center transition-colors`}>
                 <TikTokIcon className="w-4 h-4" />
               </a>
-              <a href={waUrl || '#'} target={waUrl ? "_blank" : undefined} rel="noopener noreferrer" className={`w-10 h-10 rounded-full border ${waUrl ? 'border-zinc-700 hover:border-store-primary hover:text-store-primary text-zinc-400' : 'border-zinc-800 text-zinc-600 cursor-not-allowed'} flex items-center justify-center transition-colors`}>
+              <a href={waUrl || '#'} target={waUrl ? "_blank" : undefined} rel="noopener noreferrer" className={`w-10 h-10 rounded-full border ${waUrl ? 'border-zinc-700 hover:border-store-primary hover:text-store-primary text-muted-foreground' : 'border-zinc-800 text-muted-foreground cursor-not-allowed'} flex items-center justify-center transition-colors`}>
                 <WhatsappIcon className="w-4 h-4" />
               </a>
             </div>
@@ -104,30 +104,30 @@ export function StoreFooter() {
               Explorar
               <span className="w-6 h-px bg-store-primary"></span>
             </h4>
-            <ul className="space-y-4 text-[11px] text-zinc-400">
+            <ul className="space-y-4 text-[11px] text-muted-foreground">
               <li>
                 <Link to={buildUrl("/catalog")} className="flex items-center justify-between hover:text-white transition-colors group">
-                  Catálogo Completo <ChevronRight className="w-3 h-3 text-zinc-600 group-hover:text-store-primary" />
+                  Catálogo Completo <ChevronRight className="w-3 h-3 text-muted-foreground group-hover:text-store-primary" />
                 </Link>
               </li>
               <li>
                 <Link to={buildUrl("/catalog")} className="flex items-center justify-between hover:text-white transition-colors group">
-                  Categorías <ChevronRight className="w-3 h-3 text-zinc-600 group-hover:text-store-primary" />
+                  Categorías <ChevronRight className="w-3 h-3 text-muted-foreground group-hover:text-store-primary" />
                 </Link>
               </li>
               <li>
                 <Link to={buildUrl("/catalog")} className="flex items-center justify-between hover:text-white transition-colors group">
-                  Colecciones <ChevronRight className="w-3 h-3 text-zinc-600 group-hover:text-store-primary" />
+                  Colecciones <ChevronRight className="w-3 h-3 text-muted-foreground group-hover:text-store-primary" />
                 </Link>
               </li>
               <li>
                 <Link to={buildUrl("/catalog")} className="flex items-center justify-between hover:text-white transition-colors group">
-                  Novedades <ChevronRight className="w-3 h-3 text-zinc-600 group-hover:text-store-primary" />
+                  Novedades <ChevronRight className="w-3 h-3 text-muted-foreground group-hover:text-store-primary" />
                 </Link>
               </li>
               <li>
                 <Link to={buildUrl("/catalog")} className="flex items-center justify-between hover:text-white transition-colors group">
-                  Ofertas Exclusivas <ChevronRight className="w-3 h-3 text-zinc-600 group-hover:text-store-primary" />
+                  Ofertas Exclusivas <ChevronRight className="w-3 h-3 text-muted-foreground group-hover:text-store-primary" />
                 </Link>
               </li>
             </ul>
@@ -139,30 +139,30 @@ export function StoreFooter() {
               Ayuda
               <span className="w-6 h-px bg-store-primary"></span>
             </h4>
-            <ul className="space-y-4 text-[11px] text-zinc-400">
+            <ul className="space-y-4 text-[11px] text-muted-foreground">
               <li>
                 <Link to={buildUrl("/info/faq")} className="flex items-center gap-3 hover:text-white transition-colors group">
-                  <HelpCircle className="w-4 h-4 text-zinc-500 group-hover:text-store-primary" strokeWidth={1.5} /> Preguntas Frecuentes
+                  <HelpCircle className="w-4 h-4 text-muted-foreground group-hover:text-store-primary" strokeWidth={1.5} /> Preguntas Frecuentes
                 </Link>
               </li>
               <li>
                 <Link to={buildUrl("/info/shipping")} className="flex items-center gap-3 hover:text-white transition-colors group">
-                  <Package className="w-4 h-4 text-zinc-500 group-hover:text-store-primary" strokeWidth={1.5} /> Envíos y Devoluciones
+                  <Package className="w-4 h-4 text-muted-foreground group-hover:text-store-primary" strokeWidth={1.5} /> Envíos y Devoluciones
                 </Link>
               </li>
               <li>
                 <Link to={buildUrl("/info/payment")} className="flex items-center gap-3 hover:text-white transition-colors group">
-                  <CreditCard className="w-4 h-4 text-zinc-500 group-hover:text-store-primary" strokeWidth={1.5} /> Métodos de Pago
+                  <CreditCard className="w-4 h-4 text-muted-foreground group-hover:text-store-primary" strokeWidth={1.5} /> Métodos de Pago
                 </Link>
               </li>
               <li>
                 <Link to={buildUrl("/info/privacy")} className="flex items-center gap-3 hover:text-white transition-colors group">
-                  <ShieldCheck className="w-4 h-4 text-zinc-500 group-hover:text-store-primary" strokeWidth={1.5} /> Política de Privacidad
+                  <ShieldCheck className="w-4 h-4 text-muted-foreground group-hover:text-store-primary" strokeWidth={1.5} /> Política de Privacidad
                 </Link>
               </li>
               <li>
                 <Link to={buildUrl("/info/terms")} className="flex items-center gap-3 hover:text-white transition-colors group">
-                  <FileText className="w-4 h-4 text-zinc-500 group-hover:text-store-primary" strokeWidth={1.5} /> Términos y Condiciones
+                  <FileText className="w-4 h-4 text-muted-foreground group-hover:text-store-primary" strokeWidth={1.5} /> Términos y Condiciones
                 </Link>
               </li>
             </ul>
@@ -174,7 +174,7 @@ export function StoreFooter() {
               Contacto
               <span className="w-6 h-px bg-store-primary"></span>
             </h4>
-            <ul className="space-y-4 text-[11px] text-zinc-400">
+            <ul className="space-y-4 text-[11px] text-muted-foreground">
               {settings?.phone && (
                 <li>
                   <a href={waUrl || '#'} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-white transition-colors group">
@@ -215,20 +215,20 @@ export function StoreFooter() {
                 {settings?.store_name || tenant?.name}
               </h2>
             )}
-            <p className="text-[11px] leading-relaxed max-w-[200px] mb-8 text-center text-zinc-400">
+            <p className="text-[11px] leading-relaxed max-w-[200px] mb-8 text-center text-muted-foreground">
               {settings?.description || 'Tu estilo, tu esencia. Piezas únicas que te acompañan en cada momento.'}
             </p>
             <div className="flex gap-4">
-              <a href={formatSocialUrl(settings?.social_instagram, 'instagram')} target={settings?.social_instagram ? "_blank" : undefined} rel="noopener noreferrer" className={`w-10 h-10 rounded-full border ${settings?.social_instagram ? 'border-zinc-700 text-zinc-400' : 'border-zinc-800 text-zinc-600'} flex items-center justify-center`}>
+              <a href={formatSocialUrl(settings?.social_instagram, 'instagram')} target={settings?.social_instagram ? "_blank" : undefined} rel="noopener noreferrer" className={`w-10 h-10 rounded-full border ${settings?.social_instagram ? 'border-zinc-700 text-muted-foreground' : 'border-zinc-800 text-muted-foreground'} flex items-center justify-center`}>
                 <InstagramIcon className="w-4 h-4" />
               </a>
-              <a href={formatSocialUrl(settings?.social_facebook, 'facebook')} target={settings?.social_facebook ? "_blank" : undefined} rel="noopener noreferrer" className={`w-10 h-10 rounded-full border ${settings?.social_facebook ? 'border-zinc-700 text-zinc-400' : 'border-zinc-800 text-zinc-600'} flex items-center justify-center`}>
+              <a href={formatSocialUrl(settings?.social_facebook, 'facebook')} target={settings?.social_facebook ? "_blank" : undefined} rel="noopener noreferrer" className={`w-10 h-10 rounded-full border ${settings?.social_facebook ? 'border-zinc-700 text-muted-foreground' : 'border-zinc-800 text-muted-foreground'} flex items-center justify-center`}>
                 <FacebookIcon className="w-4 h-4" />
               </a>
-              <a href={formatSocialUrl(settings?.social_tiktok, 'tiktok')} target={settings?.social_tiktok ? "_blank" : undefined} rel="noopener noreferrer" className={`w-10 h-10 rounded-full border ${settings?.social_tiktok ? 'border-zinc-700 text-zinc-400' : 'border-zinc-800 text-zinc-600'} flex items-center justify-center`}>
+              <a href={formatSocialUrl(settings?.social_tiktok, 'tiktok')} target={settings?.social_tiktok ? "_blank" : undefined} rel="noopener noreferrer" className={`w-10 h-10 rounded-full border ${settings?.social_tiktok ? 'border-zinc-700 text-muted-foreground' : 'border-zinc-800 text-muted-foreground'} flex items-center justify-center`}>
                 <TikTokIcon className="w-4 h-4" />
               </a>
-              <a href={waUrl || '#'} target={waUrl ? "_blank" : undefined} rel="noopener noreferrer" className={`w-10 h-10 rounded-full border ${waUrl ? 'border-zinc-700 text-zinc-400' : 'border-zinc-800 text-zinc-600'} flex items-center justify-center`}>
+              <a href={waUrl || '#'} target={waUrl ? "_blank" : undefined} rel="noopener noreferrer" className={`w-10 h-10 rounded-full border ${waUrl ? 'border-zinc-700 text-muted-foreground' : 'border-zinc-800 text-muted-foreground'} flex items-center justify-center`}>
                 <WhatsappIcon className="w-4 h-4" />
               </a>
             </div>
@@ -244,7 +244,7 @@ export function StoreFooter() {
                 <Plus className={`w-4 h-4 text-store-primary transition-transform duration-300 ${openSection === 'explorar' ? 'rotate-45' : ''}`} />
               </button>
               <div className={`overflow-hidden transition-all duration-300 ${openSection === 'explorar' ? 'max-h-60 pb-5' : 'max-h-0'}`}>
-                <ul className="space-y-4 text-[11px] text-zinc-400">
+                <ul className="space-y-4 text-[11px] text-muted-foreground">
                   <li><Link to={buildUrl("/catalog")}>Catálogo Completo</Link></li>
                   <li><Link to={buildUrl("/catalog")}>Categorías</Link></li>
                   <li><Link to={buildUrl("/catalog")}>Colecciones</Link></li>
@@ -260,7 +260,7 @@ export function StoreFooter() {
                 <Plus className={`w-4 h-4 text-store-primary transition-transform duration-300 ${openSection === 'ayuda' ? 'rotate-45' : ''}`} />
               </button>
               <div className={`overflow-hidden transition-all duration-300 ${openSection === 'ayuda' ? 'max-h-60 pb-5' : 'max-h-0'}`}>
-                <ul className="space-y-4 text-[11px] text-zinc-400">
+                <ul className="space-y-4 text-[11px] text-muted-foreground">
                   <li><Link to={buildUrl("/info/faq")}>Preguntas Frecuentes</Link></li>
                   <li><Link to={buildUrl("/info/shipping")}>Envíos y Devoluciones</Link></li>
                   <li><Link to={buildUrl("/info/payment")}>Métodos de Pago</Link></li>
@@ -277,7 +277,7 @@ export function StoreFooter() {
                 <Plus className={`w-4 h-4 text-store-primary transition-transform duration-300 ${openSection === 'contacto' ? 'rotate-45' : ''}`} />
               </button>
               <div className={`overflow-hidden transition-all duration-300 ${openSection === 'contacto' ? 'max-h-60 pb-5' : 'max-h-0'}`}>
-                <ul className="space-y-4 text-[11px] text-zinc-400">
+                <ul className="space-y-4 text-[11px] text-muted-foreground">
                   {settings?.phone && <li>{settings.phone}</li>}
                   <li>{settings?.contact_email || 'hola@tienda.com'}</li>
                   <li>{settings?.address || 'A todo el país'}</li>
@@ -291,7 +291,7 @@ export function StoreFooter() {
         </div>
 
         {/* BOTTOM BAR */}
-        <div className="flex flex-col md:flex-row justify-between items-center text-[9px] uppercase tracking-widest text-zinc-500 pt-6">
+        <div className="flex flex-col md:flex-row justify-between items-center text-[9px] uppercase tracking-widest text-muted-foreground pt-6">
           <p className="mb-4 md:mb-0 text-center md:text-left">
             © {currentYear} {settings?.store_name || tenant?.name}. Todos los derechos reservados.
           </p>

@@ -21,7 +21,7 @@ import { cn } from '@/lib/utils'
 
 export function Sidebar() {
   const navigate = useNavigate()
-  const { tenant, profile } = useTenant()
+  const { tenant, profile, settings } = useTenant()
   const { isAdmin } = usePermissions()
   const location = useLocation()
   const { user } = useAuth()
@@ -95,15 +95,19 @@ export function Sidebar() {
       {/* Brand area */}
       <div className="h-20 flex items-center px-8 flex-shrink-0">
         <div className="flex items-center space-x-3">
-          <div className="text-[#f5d0a9]">
-            <Crown className="h-7 w-7" strokeWidth={1.5} />
+          <div className="text-[#f5d0a9] flex-shrink-0">
+            {tenant?.logo_url ? (
+              <img src={tenant.logo_url} alt="Logo" className="h-8 w-8 object-contain" />
+            ) : (
+              <Crown className="h-7 w-7" strokeWidth={1.5} />
+            )}
           </div>
           <div className="flex flex-col">
             <span className="font-serif font-medium text-[17px] tracking-wide text-white leading-tight">
-              {tenant?.name || 'Catálogo Premium'}
+              {settings?.store_name || tenant?.name || 'Catálogo Premium'}
             </span>
-            <span className="text-[11px] text-white/50 tracking-wider uppercase font-medium">
-              Moda que inspira
+            <span className="text-[11px] text-white/50 tracking-wider uppercase font-medium truncate max-w-[150px]">
+              {settings?.description || 'Moda que inspira'}
             </span>
           </div>
         </div>
@@ -121,8 +125,8 @@ export function Sidebar() {
               className={cn(
                 "flex items-center space-x-3 px-4 py-[10px] rounded-xl text-[14px] font-medium transition-all duration-300",
                 isActive 
-                  ? "bg-white/10 text-white shadow-inner border border-white/5" 
-                  : "text-white/60 hover:bg-white/5 hover:text-white"
+                  ? "bg-card/10 text-white shadow-inner border border-white dark:border-zinc-900/5" 
+                  : "text-white/60 hover:bg-card/5 hover:text-white"
               )}
             >
               {link.icon}
@@ -132,7 +136,7 @@ export function Sidebar() {
         })}
 
         {/* Ad Box */}
-        <div className="mt-8 mb-4 mx-2 p-5 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/10">
+        <div className="mt-8 mb-4 mx-2 p-5 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white dark:border-zinc-900/10">
           <h4 className="text-white font-medium text-[14px] mb-2">Impulsa tu marca</h4>
           <p className="text-white/50 text-[12px] leading-relaxed mb-4">
             Descubre herramientas y estadísticas para crecer tu negocio.
@@ -144,13 +148,20 @@ export function Sidebar() {
       </nav>
 
       {/* User Profile */}
-      <div className="h-20 flex-shrink-0 border-t border-white/10 px-6 flex items-center justify-between">
-        <div className="flex items-center space-x-3 overflow-hidden">
-          <div className="w-10 h-10 rounded-full border border-white/20 bg-white/10 flex items-center justify-center text-white font-bold flex-shrink-0">
-            {profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || 'U'}
+      <div className="h-20 flex-shrink-0 border-t border-white dark:border-zinc-900/10 px-6 flex items-center justify-between">
+        <div 
+          className="flex items-center space-x-3 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => navigate('/dashboard/settings?tab=profile')}
+        >
+          <div className="w-10 h-10 rounded-full border border-white dark:border-zinc-900/20 bg-card/10 flex items-center justify-center text-white font-bold flex-shrink-0 overflow-hidden">
+            {tenant?.favicon_url || tenant?.logo_url ? (
+              <img src={tenant.favicon_url || tenant.logo_url!} alt="Avatar" className="w-full h-full object-cover" />
+            ) : (
+              profile?.full_name ? profile.full_name.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || 'U'
+            )}
           </div>
           <div className="flex flex-col overflow-hidden">
-            <span className="text-[14px] font-medium text-white leading-tight truncate">
+            <span className="text-[14px] font-medium text-white leading-tight truncate w-[100px]">
               {profile?.full_name || user?.email || 'Usuario'}
             </span>
             <span className="text-[11px] text-white/50 capitalize">

@@ -90,8 +90,8 @@ export function CategoriesView() {
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-700 font-sans">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-900">Categorías</h1>
-          <p className="text-[15px] text-zinc-500 mt-1">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Categorías</h1>
+          <p className="text-[15px] text-muted-foreground mt-1">
             Gestiona la clasificación principal de tus productos
           </p>
         </div>
@@ -101,63 +101,63 @@ export function CategoriesView() {
         </Button>
       </div>
 
-      <Card className="rounded-[1.5rem] border-none shadow-[0_4px_24px_rgb(0,0,0,0.02)] overflow-hidden flex flex-col">
-        <div className="p-4 md:p-6 border-b border-zinc-100 flex items-center justify-between">
+      <Card className="rounded-[1.5rem] bg-card border-none shadow-[0_4px_24px_rgb(0,0,0,0.02)] overflow-hidden flex flex-col">
+        <div className="p-4 md:p-6 border-b border-zinc-100 dark:border-zinc-800 dark:border-zinc-800 flex items-center justify-between">
           <div className="relative w-full max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input 
               placeholder="Buscar categorías..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 bg-zinc-50 border-none rounded-xl"
+              className="pl-9 bg-zinc-50 dark:bg-zinc-900/50 dark:bg-zinc-900/50 border-none rounded-xl text-foreground"
             />
           </div>
         </div>
 
         <div className="overflow-x-auto">
           <Table>
-            <TableHeader className="bg-zinc-50/50">
-              <TableRow className="border-zinc-100 hover:bg-transparent">
-                <TableHead className="font-medium text-zinc-500 text-xs uppercase tracking-wider pl-6">Nombre</TableHead>
-                <TableHead className="font-medium text-zinc-500 text-xs uppercase tracking-wider">Slug</TableHead>
-                <TableHead className="font-medium text-zinc-500 text-xs uppercase tracking-wider text-center">Posición</TableHead>
-                <TableHead className="font-medium text-zinc-500 text-xs uppercase tracking-wider">Estado</TableHead>
-                <TableHead className="font-medium text-zinc-500 text-xs uppercase tracking-wider text-right pr-6">Acciones</TableHead>
+            <TableHeader className="bg-zinc-50 dark:bg-zinc-900/50 dark:bg-zinc-900/50">
+              <TableRow className="border-zinc-100 dark:border-zinc-800 dark:border-zinc-800 hover:bg-transparent">
+                <TableHead className="font-medium text-muted-foreground text-xs uppercase tracking-wider pl-6">Nombre</TableHead>
+                <TableHead className="font-medium text-muted-foreground text-xs uppercase tracking-wider">Slug</TableHead>
+                <TableHead className="font-medium text-muted-foreground text-xs uppercase tracking-wider text-center">Posición</TableHead>
+                <TableHead className="font-medium text-muted-foreground text-xs uppercase tracking-wider">Estado</TableHead>
+                <TableHead className="font-medium text-muted-foreground text-xs uppercase tracking-wider text-right pr-6">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-12 text-zinc-500">
+                  <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
                     Cargando categorías...
                   </TableCell>
                 </TableRow>
               ) : filteredCategories.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-12">
-                    <div className="flex flex-col items-center justify-center text-zinc-500">
-                      <LayoutGrid className="w-10 h-10 mb-3 text-zinc-300" />
-                      <p>No se encontraron categorías</p>
+                    <div className="flex flex-col items-center justify-center text-muted-foreground">
+                      <LayoutGrid className="w-10 h-10 mb-3 text-zinc-300 dark:text-foreground" />
+                      <p className="text-foreground">No se encontraron categorías</p>
                     </div>
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredCategories.map((category) => (
-                  <TableRow key={category.id} className="border-zinc-100 hover:bg-zinc-50/50 transition-colors">
-                    <TableCell className="font-medium text-zinc-900 pl-6 py-4">{category.name}</TableCell>
-                    <TableCell className="text-zinc-500 py-4">{category.slug}</TableCell>
-                    <TableCell className="text-zinc-500 py-4 text-center">{category.position}</TableCell>
+                  <TableRow key={category.id} className="border-zinc-100 dark:border-zinc-800 dark:border-zinc-800 hover:bg-zinc-50 dark:bg-zinc-900/50 dark:hover:bg-zinc-900/50 transition-colors">
+                    <TableCell className="font-medium text-foreground pl-6 py-4">{category.name}</TableCell>
+                    <TableCell className="text-muted-foreground py-4">{category.slug}</TableCell>
+                    <TableCell className="text-muted-foreground py-4 text-center">{category.position}</TableCell>
                     <TableCell className="py-4">
-                      <span className={"inline-flex items-center px-2 py-1 rounded-md text-[11px] font-medium " + (category.is_active ? 'bg-emerald-50 text-emerald-600' : 'bg-zinc-100 text-zinc-500')}>
+                      <span className={"inline-flex items-center px-2 py-1 rounded-md text-[11px] font-medium " + (category.is_active ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' : 'bg-zinc-100 dark:bg-zinc-800 dark:bg-zinc-800 text-muted-foreground dark:text-muted-foreground')}>
                         {category.is_active ? 'Activa' : 'Inactiva'}
                       </span>
                     </TableCell>
                     <TableCell className="py-4 pr-6 text-right">
                       <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => openEditSheet(category)} className="w-8 h-8 rounded-lg hover:bg-zinc-100 text-zinc-500 hover:text-zinc-900">
+                        <Button variant="ghost" size="icon" onClick={() => openEditSheet(category)} className="w-8 h-8 rounded-lg text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors">
                           <Pencil className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => setDeleteConfirm(category.id)} className="w-8 h-8 rounded-lg hover:bg-rose-50 text-zinc-500 hover:text-rose-600">
+                        <Button variant="ghost" size="icon" onClick={() => setDeleteConfirm(category.id)} className="w-8 h-8 rounded-lg text-muted-foreground hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-500 transition-colors">
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
@@ -171,13 +171,13 @@ export function CategoriesView() {
       </Card>
 
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent className="sm:max-w-md bg-white border-l-0 shadow-2xl p-0 flex flex-col h-full">
-          <div className="p-6 border-b border-zinc-100">
+        <SheetContent className="sm:max-w-md bg-card dark:border-zinc-800 border-l-0 shadow-2xl p-0 flex flex-col h-full">
+          <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 dark:border-zinc-800">
             <SheetHeader>
-              <SheetTitle className="text-xl font-bold text-zinc-900">
+              <SheetTitle className="text-xl font-bold text-foreground">
                 {editingId ? 'Editar Categoría' : 'Nueva Categoría'}
               </SheetTitle>
-              <SheetDescription className="text-sm text-zinc-500 mt-1">
+              <SheetDescription className="text-sm text-muted-foreground mt-1">
                 {editingId ? 'Modifica los datos de la categoría existente.' : 'Completa los datos para crear una nueva categoría.'}
               </SheetDescription>
             </SheetHeader>
@@ -186,36 +186,36 @@ export function CategoriesView() {
           <form onSubmit={handleSubmit(onSubmit)} className="flex-1 overflow-y-auto p-6 space-y-6">
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-900">Nombre</label>
-                <Input {...register('name')} onChange={handleNameChange} className="rounded-xl bg-zinc-50 border-zinc-200" placeholder="Ej. Camisetas" />
+                <label className="text-sm font-medium text-foreground">Nombre</label>
+                <Input {...register('name')} onChange={handleNameChange} className="rounded-xl bg-zinc-50 dark:bg-zinc-900/50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 dark:border-zinc-700 text-foreground" placeholder="Ej. Camisetas" />
                 {errors.name && <p className="text-rose-500 text-xs">{errors.name.message}</p>}
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-900">Slug</label>
-                <Input {...register('slug')} className="rounded-xl bg-zinc-50 border-zinc-200 text-zinc-500" placeholder="camisetas" />
+                <label className="text-sm font-medium text-foreground">Slug</label>
+                <Input {...register('slug')} className="rounded-xl bg-zinc-50 dark:bg-zinc-900/50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 dark:border-zinc-700 text-muted-foreground" placeholder="camisetas" />
                 {errors.slug && <p className="text-rose-500 text-xs">{errors.slug.message}</p>}
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-900">Descripción (Opcional)</label>
-                <Input {...register('description')} className="rounded-xl bg-zinc-50 border-zinc-200" placeholder="Breve descripción..." />
+                <label className="text-sm font-medium text-foreground">Descripción (Opcional)</label>
+                <Input {...register('description')} className="rounded-xl bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800" placeholder="Breve descripción..." />
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-900">Posición</label>
-                <Input type="number" {...register('position')} className="rounded-xl bg-zinc-50 border-zinc-200" />
+                <label className="text-sm font-medium text-foreground">Posición</label>
+                <Input type="number" {...register('position')} className="rounded-xl bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800" />
               </div>
 
               <div className="flex items-center space-x-2 pt-2">
-                <input type="checkbox" id="is_active" {...register('is_active')} className="rounded border-zinc-300 text-primary focus:ring-primary h-4 w-4" />
-                <label htmlFor="is_active" className="text-sm font-medium text-zinc-900">
+                <input type="checkbox" id="is_active" {...register('is_active')} className="rounded border-zinc-300 dark:border-zinc-700 text-primary focus:ring-primary h-4 w-4" />
+                <label htmlFor="is_active" className="text-sm font-medium text-foreground">
                   Categoría Activa
                 </label>
               </div>
             </div>
 
-            <div className="pt-6 border-t border-zinc-100 flex justify-end gap-3 mt-auto">
+            <div className="pt-6 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-3 mt-auto">
               <Button type="button" variant="ghost" onClick={() => setIsSheetOpen(false)} className="rounded-xl">
                 Cancelar
               </Button>

@@ -99,10 +99,10 @@ export function OrdersView() {
     <div className="h-[calc(100vh-6rem)] flex flex-col animate-in fade-in duration-700 font-sans">
       <div className="flex items-center justify-between gap-4 mb-6 shrink-0">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Pedidos
           </h1>
-          <p className="text-[15px] text-zinc-500 mt-1">
+          <p className="text-[15px] text-muted-foreground mt-1">
             Tablero Kanban interactivo para gestionar tus ventas
           </p>
         </div>
@@ -120,15 +120,15 @@ export function OrdersView() {
                 key={status.id}
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, status.id)}
-                className="w-80 flex flex-col bg-zinc-50 rounded-xl border border-zinc-200 overflow-hidden shrink-0"
+                className="w-80 flex flex-col bg-zinc-50 dark:bg-zinc-900/50 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shrink-0"
               >
                 {/* Column Header */}
-                <div className="p-4 border-b border-zinc-200 flex justify-between items-center bg-white">
+                <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center bg-card">
                   <div className="flex items-center gap-2">
-                    <Icon className="w-4 h-4 text-zinc-500" />
-                    <h3 className="font-semibold text-zinc-900">{status.label}</h3>
+                    <Icon className="w-4 h-4 text-muted-foreground" />
+                    <h3 className="font-semibold text-foreground">{status.label}</h3>
                   </div>
-                  <span className="text-xs font-medium text-zinc-500 bg-zinc-100 px-2 py-1 rounded-full">
+                  <span className="text-xs font-medium text-muted-foreground bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-full">
                     {columnOrders.length}
                   </span>
                 </div>
@@ -141,10 +141,10 @@ export function OrdersView() {
                       draggable
                       onDragStart={(e) => handleDragStart(e, order.id)}
                       onClick={() => setSelectedOrderId(order.id)}
-                      className="bg-white p-4 rounded-xl shadow-sm border border-zinc-200 cursor-pointer hover:border-store-primary hover:shadow-md transition-all active:cursor-grabbing group relative"
+                      className="bg-card p-4 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 cursor-pointer hover:border-store-primary hover:shadow-md transition-all active:cursor-grabbing group relative"
                     >
                       <div className="flex justify-between items-start mb-3">
-                        <span className="text-xs font-mono font-bold text-zinc-400 group-hover:text-store-primary transition-colors">
+                        <span className="text-xs font-mono font-bold text-muted-foreground group-hover:text-store-primary transition-colors">
                           #{order.id.slice(0, 8)}
                         </span>
                         <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${status.color}`}>
@@ -153,16 +153,16 @@ export function OrdersView() {
                       </div>
                       
                       <div className="mb-4">
-                        <p className="text-sm font-bold text-zinc-900 truncate">
+                        <p className="text-sm font-bold text-foreground truncate">
                           {order.customers?.first_name} {order.customers?.last_name || ''}
                         </p>
-                        <p className="text-[11px] text-zinc-500 mt-0.5 truncate flex items-center gap-1">
+                        <p className="text-[11px] text-muted-foreground mt-0.5 truncate flex items-center gap-1">
                           {order.customers?.phone || order.customers?.email}
                         </p>
                       </div>
 
-                      <div className="flex justify-between items-center border-t border-zinc-100 pt-3">
-                        <span className="text-[11px] font-medium text-zinc-400 flex items-center gap-1">
+                      <div className="flex justify-between items-center border-t border-zinc-100 dark:border-zinc-800 pt-3">
+                        <span className="text-[11px] font-medium text-muted-foreground flex items-center gap-1">
                           <ShoppingBag className="w-3 h-3" />
                           {new Date(order.created_at).toLocaleDateString()}
                         </span>
@@ -174,7 +174,7 @@ export function OrdersView() {
                   ))}
 
                   {columnOrders.length === 0 && (
-                    <div className="h-24 flex items-center justify-center border-2 border-dashed border-zinc-200 rounded-lg text-xs text-zinc-400">
+                    <div className="h-24 flex items-center justify-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg text-xs text-muted-foreground">
                       Arrastra un pedido aquí
                     </div>
                   )}
