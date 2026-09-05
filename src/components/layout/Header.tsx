@@ -45,7 +45,7 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
         </button>
         
         {/* Theme Toggle */}
-        <div className="hidden sm:flex h-12 w-12 rounded-2xl bg-card border border-zinc-200 dark:border-zinc-800 shadow-[0_4px_20px_rgb(0,0,0,0.03)] items-center justify-center">
+        <div className="flex h-12 w-12 rounded-2xl bg-card border border-zinc-200 dark:border-zinc-800 shadow-[0_4px_20px_rgb(0,0,0,0.03)] items-center justify-center">
           <ThemeToggle showLabel={false} />
         </div>
         

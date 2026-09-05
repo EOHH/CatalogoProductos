@@ -26,7 +26,7 @@ export function StoreHome() {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
 
         {/* 1. HERO BANNER */}
-        <section className="relative w-full rounded-3xl overflow-hidden mb-12 lg:mb-16 shadow-xl border border-zinc-100 dark:border-zinc-800 bg-gradient-to-br from-[#faf8f5] to-[#f3f0ea] lg:min-h-[480px] flex flex-col lg:flex-row">
+        <section className="relative w-full rounded-3xl overflow-hidden mb-12 lg:mb-16 shadow-xl border border-zinc-100 dark:border-zinc-800 bg-gradient-to-br from-[#faf8f5] dark:from-zinc-900 to-[#f3f0ea] dark:to-zinc-950 lg:min-h-[480px] flex flex-col lg:flex-row">
 
           {/* Subtle Abstract Waves Background (Full width) */}
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 0% 50%, #000 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>

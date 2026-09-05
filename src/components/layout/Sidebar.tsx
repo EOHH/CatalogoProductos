@@ -90,7 +90,7 @@ export function Sidebar() {
   ]
 
   return (
-    <aside className="w-[260px] bg-primary text-white hidden md:flex flex-col relative h-screen border-r border-primary/20">
+    <aside className="w-full md:w-[260px] bg-primary text-white flex flex-col relative h-full border-r border-primary/20">
       
       {/* Brand area */}
       <div className="h-20 flex items-center px-8 flex-shrink-0">

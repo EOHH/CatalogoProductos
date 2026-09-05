@@ -87,7 +87,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Text Container (Inside Card) */}
-        <div className="relative z-10 w-full px-4 pb-4 pt-8 bg-gradient-to-t from-white via-white to-transparent text-left">
+        <div className="relative z-10 w-full px-4 pb-4 pt-8 bg-gradient-to-t from-white dark:from-card via-white dark:via-card to-transparent text-left">
           <h3 className="text-[14px] font-bold text-foreground group-hover:text-store-primary transition-colors line-clamp-1 mb-1.5">
             {product.name}
           </h3>
